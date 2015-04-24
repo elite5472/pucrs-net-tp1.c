@@ -1,2 +1,2 @@
 default:
-	g++ -pthread -std=c++11 main.cpp -o tp1
+	g++ -pthread -std=c++11 main.cpp -o bin/tp1
