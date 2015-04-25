@@ -31,21 +31,15 @@
 
 using namespace std;
 
-typedef unsigned char EtherType[ETHERTYPE_LEN];
-typedef unsigned char MacAddress[MAC_ADDR_LEN];
-
-typedef unsigned char DataType2[2];
-typedef unsigned char DataType3[3];
-typedef unsigned char DataType8[8];
 extern int errno;
 
 typedef uint8_t MacAddress[6];
 
 typedef struct
 {
-    MacAddress Destination;
-    MacAddress Source;
-    uint16_t Type;
+    MacAddress 	Destination;
+    MacAddress 	Source;
+    uint16_t 	Type;
 } __attribute__((packed)) EthernetHeader;
 
 typedef struct
@@ -65,14 +59,17 @@ typedef struct
 
 typedef struct
 {
-    uint8_t	VersionIhl;
-    uint8_t	DscpEcn;
+    uint8_t		VersionIhl;
+    uint8_t		DscpEcn;
     uint16_t	Length;
+    
     uint16_t    Id;
     uint16_t    FlagsOffset;
-    uint8_t	Ttl;
-    uint8_t	Protocol;
+    
+    uint8_t		Ttl;
+    uint8_t		Protocol;
     uint16_t	Checksum;
+    
     uint32_t	Source;
     uint32_t	Destination;
   
@@ -80,8 +77,8 @@ typedef struct
 
 typedef struct
 {
-    uint8_t	Type;
-    uint8_t	Code;
+    uint8_t		Type;
+    uint8_t		Code;
     uint16_t	Checksum;
 } __attribute__((packed)) IcmpHeader;
 
@@ -114,7 +111,7 @@ unordered_map<string, int> stats_ip_tcp_http_access_count;
 
 void print_mac(MacAddress s)
 {
-	printf("%x:%x:%x:%x:%x:%x", s[0],s[1],s[2],s[3],s[4],s[5]);
+	printf("%2.0x:%2.0x:%2.0x:%2.0x:%2.0x:%2.0x", s[0],s[1],s[2],s[3],s[4],s[5]);
 }
 
 void print_ip(uint32_t ip)
