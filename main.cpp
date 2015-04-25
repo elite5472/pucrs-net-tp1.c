@@ -111,7 +111,7 @@ unordered_map<string, int> stats_ip_tcp_http_access_count;
 
 void print_mac(MacAddress s)
 {
-	printf("%2.0x:%2.0x:%2.0x:%2.0x:%2.0x:%2.0x", s[0],s[1],s[2],s[3],s[4],s[5]);
+	printf("%02x:%02x:%02x:%02x:%02x:%02x", s[0],s[1],s[2],s[3],s[4],s[5]);
 }
 
 void print_ip(uint32_t ip)
