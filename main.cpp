@@ -82,6 +82,31 @@ typedef struct
     uint16_t	Checksum;
 } __attribute__((packed)) IcmpHeader;
 
+typedef struct
+{
+	uint16_t	SourcePort;
+	uint16_t	DestPort;
+	
+	uint32_t	SequenceNum;
+	
+	uint32_t	AckNum;
+	
+	uint16_t	Flags;
+	uint16_t	WindowSize;
+	
+	uint16_t	Checksum;
+	uint16_t	UrgentPointer;
+} __attribute__((packed)) TcpHeader;
+
+typedef struct
+{
+	uint16_t	SourcePort;
+	uint16_t	DestPort;
+	
+	uint16_t	Length;	
+	uint16_t	Checksum;
+} __attribute__((packed)) UdpHeader;
+
 int stats_frame_count;
 int stats_frame_size_min;
 int stats_frame_size_max;
