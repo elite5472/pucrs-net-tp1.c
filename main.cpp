@@ -170,7 +170,7 @@ void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
         if(stats_frame_size_min > size || stats_frame_size_min == 0) stats_frame_size_min = size;
         if(stats_frame_size_max < size) stats_frame_size_max = size;
         
-        ArpFrame* frame = (ArpFrame*)(buffer +14);
+        ArpHeader* frame = (ArpHeader*)(buffer +14);
         stat_arp(frame);
     }
     
