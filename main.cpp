@@ -139,6 +139,16 @@ void print_mac(MacAddress s)
 	printf("%02x:%02x:%02x:%02x:%02x:%02x", s[0],s[1],s[2],s[3],s[4],s[5]);
 }
 
+bool mac_equal(MacAddress a, MacAddress b)
+{
+    for(int i = 0; i < 6; i++)
+    {
+        if(a[i] != b[i]) return false;
+    }
+    
+    return true;
+}
+
 void print_ip(uint32_t ip)
 {
 	unsigned char bytes[4];
@@ -159,6 +169,9 @@ void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
         int size = 42;
         if(stats_frame_size_min > size || stats_frame_size_min == 0) stats_frame_size_min = size;
         if(stats_frame_size_max < size) stats_frame_size_max = size;
+        
+        ArpFrame* frame = (ArpFrame*)(buffer +14);
+        stat_arp(frame);
     }
     
     else if(ntohs(frame->Type) == 0x0800)
@@ -172,7 +185,11 @@ void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
 
 void stat_arp(ArpHeader* frame)
 {
-    
+    MacAddress zero = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    if (mac_equal(frame->TargetHardwareAddress, zero))
+        stats_arp_request_count++;
+    else
+        stats_arp_reply_count++;
 }
 
 void stat_ip(IpHeader* frame)
@@ -217,7 +234,7 @@ void* thread_listener(void * arg)
         
         stat_ethernet(ethheader, buffer);
 
-        printf("Frame #%d, Min %d bytes, Max %d bytes\n", stats_frame_count, stats_frame_size_min, stats_frame_size_max);
+        printf("Frame #%d, Min %d bytes, Max %d bytes, ArpReq #%d, ArpRep #%d \n", stats_frame_count, stats_frame_size_min, stats_frame_size_max, stats_arp_request_count, stats_arp_reply_count);
     }
 }
 
