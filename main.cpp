@@ -159,6 +159,35 @@ void print_ip(uint32_t ip)
     printf("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]); 
 }
 
+void stat_arp(ArpHeader* frame)
+{
+    MacAddress zero = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    if (mac_equal(frame->TargetHardwareAddress, zero))
+        stats_arp_request_count++;
+    else
+        stats_arp_reply_count++;
+}
+
+void stat_icmp(IcmpHeader* frame)
+{ 
+    
+}
+
+void stat_tcp(TcpHeader* frame)
+{
+    
+}
+
+void stat_udp(UdpHeader* frame)
+{ 
+    
+}
+
+void stat_ip(IpHeader* frame)
+{
+    
+}
+
 void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
 {
     //112 (14)
@@ -181,35 +210,6 @@ void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
         if(stats_frame_size_min > size || stats_frame_size_min == 0) stats_frame_size_min = size;
         if(stats_frame_size_max < size) stats_frame_size_max = size;
     }
-}
-
-void stat_arp(ArpHeader* frame)
-{
-    MacAddress zero = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    if (mac_equal(frame->TargetHardwareAddress, zero))
-        stats_arp_request_count++;
-    else
-        stats_arp_reply_count++;
-}
-
-void stat_ip(IpHeader* frame)
-{
-    
-}
-
-void stat_icmp(IcmpHeader* frame)
-{ 
-    
-}
-
-void stat_tcp(TcpHeader* frame)
-{
-    
-}
-
-void stat_udp(UdpHeader* frame)
-{ 
-    
 }
 
 int thread_listener_socket = 0;
