@@ -115,7 +115,7 @@ int stats_arp_request_count = 0;
 int stats_arp_reply_count = 0;
 
 int stats_ip_count = 0;
-unordered_map<uint32_t, int> stats_ip_access_count;
+unordered_map<uint32_t, int> stats_ip_access_count = {};
 
 int stats_ip_icmp_count = 0;
 int stats_ip_icmp_echo_request_count = 0;
@@ -124,8 +124,8 @@ int stats_ip_icmp_echo_reply_count = 0;
 int stats_ip_udp_count = 0;
 int stats_ip_tcp_count = 0;
 
-unordered_map<uint16_t, int> stats_ip_tcp_access_count;
-unordered_map<uint16_t, int> stats_ip_udp_access_count;
+unordered_map<uint16_t, int> stats_ip_tcp_access_count = {};
+unordered_map<uint16_t, int> stats_ip_udp_access_count = {};
 
 int stats_ip_tcp_http_count = 0;
 int stats_ip_tcp_dns_count = 0;
@@ -183,9 +183,27 @@ void stat_udp(UdpHeader* frame)
     
 }
 
-void stat_ip(IpHeader* frame)
+void stat_ip(IpHeader* frame, unsigned char* buffer)
 {
+    stats_ip_count++;
+    stats_ip_access_count[frame->Destination] = stats_ip_access_count[frame->Destination] + 1;
     
+    unordered_map<uint32_t, int>::const_iterator got = stats_ip_access_count.find(frame->Destination);
+    if(got == stats_ip_access_count.end())
+        stats_ip_access_count[frame->Destination] = 1;
+    else
+        stats_ip_access_count[frame->Destination] = stats_ip_access_count[frame->Destination] + 1;
+        
+    if(ntohs(frame->Protocol) == 0x01)
+        stat_icmp((IcmpHeader*)(buffer+20));
+        
+    if(ntohs(frame->Protocol) == 0x06)
+        stat_tcp((TcpHeader*)(buffer+20));
+        
+    if(ntohs(frame->Protocol) == 0x11)
+        stat_udp((UdpHeader*)(buffer+20));
+        
+    printf("To: "); print_ip(ntohl(frame->Destination));
 }
 
 void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
@@ -209,6 +227,8 @@ void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
         int size = 14 + ntohs(ip->Length);
         if(stats_frame_size_min > size || stats_frame_size_min == 0) stats_frame_size_min = size;
         if(stats_frame_size_max < size) stats_frame_size_max = size;
+        
+        stat_ip(ip, (buffer+14));
     }
 }
 
