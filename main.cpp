@@ -164,7 +164,7 @@ void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
     else if(ntohs(frame->Type) == 0x0800)
     {
         IpHeader* ip = (IpHeader*)(buffer + 14);
-        int size = 14 + ip->Length;
+        int size = 14 + ntohs(ip->Length);
         if(stats_frame_size_min > size || stats_frame_size_min == 0) stats_frame_size_min = size;
         if(stats_frame_size_max < size) stats_frame_size_max = size;
     }
