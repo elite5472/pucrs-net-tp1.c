@@ -215,7 +215,7 @@ void* thread_listener(void * arg)
 
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
         
-        stat_ethernet();
+        stat_ethernet(ethheader, buffer);
 
         printf("Frame #%d\nMin %d bytes \n Max %d bytes", stats_frame_count);
     }
