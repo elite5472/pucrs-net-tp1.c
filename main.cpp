@@ -107,30 +107,30 @@ typedef struct
 	uint16_t	Checksum;
 } __attribute__((packed)) UdpHeader;
 
-int stats_frame_count;
-int stats_frame_size_min;
-int stats_frame_size_max;
+int stats_frame_count = 0;
+int stats_frame_size_min = 0;
+int stats_frame_size_max = 0;
 
-int stats_arp_request_count;
-int stats_arp_reply_count;
+int stats_arp_request_count = 0;
+int stats_arp_reply_count = 0;
 
-int stats_ip_count;
+int stats_ip_count = 0;
 unordered_map<uint32_t, int> stats_ip_access_count;
 
-int stats_ip_icmp_count;
-int stats_ip_icmp_echo_request_count;
-int stats_ip_icmp_echo_reply_count;
+int stats_ip_icmp_count = 0;
+int stats_ip_icmp_echo_request_count = 0;
+int stats_ip_icmp_echo_reply_count = 0;
 
-int stats_ip_udp_count;
-int stats_ip_tcp_count;
+int stats_ip_udp_count = 0;
+int stats_ip_tcp_count = 0;
 
 unordered_map<uint16_t, int> stats_ip_tcp_access_count;
 unordered_map<uint16_t, int> stats_ip_udp_access_count;
 
-int stats_ip_tcp_http_count;
-int stats_ip_tcp_dns_count;
-int stats_ip_tcp_other1_count;
-int stats_ip_tcp_other2_count;
+int stats_ip_tcp_http_count = 0;
+int stats_ip_tcp_dns_count = 0;
+int stats_ip_tcp_other1_count = 0;
+int stats_ip_tcp_other2_count = 0;
 
 unordered_map<string, int> stats_ip_tcp_http_access_count;
 
@@ -147,6 +147,52 @@ void print_ip(uint32_t ip)
     bytes[2] = (ip >> 16) & 0xFF;
     bytes[3] = (ip >> 24) & 0xFF;	
     printf("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]); 
+}
+
+void stat_ethernet(EthernetHeader* frame, char* buffer)
+{
+    //112 (14)
+    stats_frame_count++;
+    
+    if(ntohs(frame->Type) == 0x0806)
+    {
+        int size = 42;
+        if(stats_frame_size_min > size || stats_frame_size_min == 0) stats_frame_size_min = size;
+        if(stats_frame_size_max < size) stats_frame_size_max = size;
+    }
+    
+    else if(ntohs(frame->Type) == 0x0800)
+    {
+        IpHeader* ip = (IpHeader*)(buffer + 14);
+        int size = 14 + ip->Length;
+        if(stats_frame_size_min > size || stats_frame_size_min == 0) stats_frame_size_min = size;
+        if(stats_frame_size_max < size) stats_frame_size_max = size;
+    }
+}
+
+void stat_arp(ArpHeader* frame)
+{
+    
+}
+
+void stat_ip(IpHeader* frame)
+{
+    
+}
+
+void stat_icmp(IcmpHeader* frame)
+{ 
+    
+}
+
+void stat_tcp(TcpHeader* frame)
+{
+    
+}
+
+void stat_udp(UdpHeader* frame)
+{ 
+    
 }
 
 int thread_listener_socket = 0;
@@ -168,25 +214,16 @@ void* thread_listener(void * arg)
         recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
+        
+        stat_ethernet();
 
-        printf("Package Captured From ");
-		print_mac(ethheader->Source);
-        printf(" to ");
-		print_mac(ethheader->Destination);
-        printf("\n");
-
-		if (ntohs(ethheader->Type) == 0x0806 /*ARP*/)
-		{
-			ArpHeader* arpheader = (ArpHeader*)(buffer+14);
-			printf("ARP IP Requested: ");
-		 	print_ip(ntohl(arpheader->TargetProtocolAddress));
-			printf("\n");
-		}
+        printf("Frame #%d\nMin %d bytes \n Max %d bytes", stats_frame_count);
     }
 }
 
 void* thread_cmd(void * arg)
 {
+    
 }
 
 int main(int argc, char *argv[])
