@@ -149,7 +149,7 @@ void print_ip(uint32_t ip)
     printf("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]); 
 }
 
-void stat_ethernet(EthernetHeader* frame, char* buffer)
+void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
 {
     //112 (14)
     stats_frame_count++;
