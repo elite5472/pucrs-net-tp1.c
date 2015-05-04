@@ -217,7 +217,7 @@ void* thread_listener(void * arg)
         
         stat_ethernet(ethheader, buffer);
 
-        printf("Frame #%d\nMin %d bytes \n Max %d bytes", stats_frame_count, stats_frame_size_min, stats_frame_size_max);
+        printf("Frame #%d, Min %d bytes, Max %d bytes\n", stats_frame_count, stats_frame_size_min, stats_frame_size_max);
     }
 }
 
