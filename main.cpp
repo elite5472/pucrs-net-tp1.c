@@ -332,8 +332,6 @@ void* thread_listener(void * arg)
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
 
         stat_ethernet(ethheader, buffer);
-
-        //printf("Frame #%d, Min %d bytes, Max %d bytes, ArpReq #%d, ArpRep #%d \n", stats_frame_count, stats_frame_size_min, stats_frame_size_max, stats_arp_request_count, stats_arp_reply_count);
     }
 }
 
@@ -377,13 +375,11 @@ void* thread_cmd(void * arg)
         
         switch(cod)
         {
-        	case 1:{
-        		cout << "Min" << endl;
-        			cout << stats_frame_size_min << endl;
-        		cout << "Max" << endl;
-        			cout << stats_frame_size_max << endl;
-        		cout << "Média" << endl;
-        			cout << stats_frame_size_total/stats_frame_count << endl;
+        	case 1:
+            {
+        		cout << "Min: " << stats_frame_size_min << " bytes" << endl;
+        		cout << "Max: " << stats_frame_size_max << " bytes" << endl;
+        		cout << "Média: " << stats_frame_size_total/stats_frame_count << " bytes" << endl;
         		break;
         	}
         	case 2:{
@@ -404,7 +400,6 @@ void* thread_cmd(void * arg)
         	case 4:{
         		cout << "Quantidade e porcentagem de ICMP Echo Request" << endl;
         			cout << stats_ip_icmp_echo_request_count << endl;
-                    //printf("%.2f\%\n", );
                     printf("%.2f%%\n", (stats_ip_icmp_echo_request_count * 100.0)/ stats_ip_icmp_count);
         		cout << "Quantidade e porcentagem de ICMP Echo Reply" << endl;
         			cout << stats_ip_icmp_echo_reply_count << endl;
