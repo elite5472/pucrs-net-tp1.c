@@ -383,26 +383,26 @@ void* thread_cmd(void * arg)
 		case 2:{
 			cout << "Quantidade e Porcentagem ARP Request" << endl;
 				cout << stats_arp_request_count << endl;
-                printf("%.2f\%\n", (stats_arp_request_count * 100.0)/ stats_arp_request_count);
+                printf("%.2f%%\n", (stats_arp_request_count * 100.0)/ stats_arp_request_count);
 			cout << "Quantidade e Porcentagem ARP Reply" << endl;
 				cout << stats_arp_reply_count << endl;
-				printf("%.2f\%\n", (stats_arp_reply_count * 100.0)/ stats_arp_request_count);
+				printf("%.2f%%\n", (stats_arp_reply_count * 100.0)/ stats_arp_request_count);
 			break;
 		}
 		case 3:{
 			cout << "Quantidade e porcentagem de pacotes ICMP" << endl;
 				cout << stats_ip_icmp_count << endl;
-                printf("%.2f\%\n", (stats_ip_icmp_count * 100.0)/ stats_ip_count);
+                printf("%.2f%%\n", (stats_ip_icmp_count * 100.0)/ stats_ip_count);
 			break;
 		}
 		case 4:{
 			cout << "Quantidade e porcentagem de ICMP Echo Request" << endl;
 				cout << stats_ip_icmp_echo_request_count << endl;
                 //printf("%.2f\%\n", );
-                printf("%.2f\%\n", (stats_ip_icmp_echo_request_count * 100.0)/ stats_ip_icmp_count);
+                printf("%.2f%%\n", (stats_ip_icmp_echo_request_count * 100.0)/ stats_ip_icmp_count);
 			cout << "Quantidade e porcentagem de ICMP Echo Reply" << endl;
 				cout << stats_ip_icmp_echo_reply_count << endl;
-                printf("%.2f\%\n", (stats_ip_icmp_echo_reply_count * 100.0)/ stats_ip_icmp_count);
+                printf("%.2f%%\n", (stats_ip_icmp_echo_reply_count * 100.0)/ stats_ip_icmp_count);
 			break;
 		}
         /*
