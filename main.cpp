@@ -176,10 +176,9 @@ void stat_arp(ArpHeader* frame)
 void stat_icmp(IcmpHeader* frame)
 {
     stats_ip_icmp_count++;
-    printf("%x\n", ntohs(frame->Type));
-    if(ntohs(frame->Type) == 0x00)
+    if(ntohs(frame->Type) == 0x0000)
         stats_ip_icmp_echo_reply_count++;
-    if(ntohs(frame->Type) == 0x08)
+    if(ntohs(frame->Type) == 0x0800)
         stats_ip_icmp_echo_request_count++;
 }
 
