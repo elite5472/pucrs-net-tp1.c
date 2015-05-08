@@ -183,7 +183,7 @@ void stat_icmp(IcmpHeader* frame)
 void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 {
     ++stats_ip_tcp_count;
-    unordered_map<uint32_t, int>::const_iterator got = stats_ip_tcp_access_count.find(frame_tcp->DestPort);
+    unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_access_count.find(frame_tcp->DestPort);
     if(got == stats_ip_tcp_access_count.end())
         stats_ip_tcp_access_count[frame_tcp->DestPort] = 1;
     else
