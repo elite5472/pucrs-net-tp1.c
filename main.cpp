@@ -204,7 +204,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
     
     if(ntohs(frame_tcp->DestPort) == 80 || ntohs(frame_tcp->DestPort) == 443)
     {
-        unordered_map<uint32_t, int>::const_iterator got = stats_ip_website_access_count.find(frame->Destination);
+        unordered_map<uint32_t, int>::const_iterator got = stats_ip_website_access_count.find(frame_ip->Destination);
         if(got == stats_ip_website_access_count.end())
             stats_ip_website_access_count[frame_ip->Destination] = 1;
         else
