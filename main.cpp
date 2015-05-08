@@ -242,7 +242,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
     }
 */
     int ack = (frame_tcp->Flags >> 4) & 1;
-    int syn = frame_tcp->Flags & 1
+    int syn = frame_tcp->Flags & 1;
     if(ack == 1 && syn == 0)                // canal tcp - 1 passo: ack = 0 e syn = 1, 2 passo: ack = 1 e syn = 1, 3 passo: ack = 1 e syn = 0
         ++stats_ip_tcp_initiated_count;
 }
