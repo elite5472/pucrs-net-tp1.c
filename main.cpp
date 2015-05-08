@@ -361,6 +361,21 @@ void printMenu(){
 	cout << "\t14) Lista com os 5 sites mais acessados" << endl << endl;
 }
 
+int get_lowest_i(int* a, int len)
+{
+    int lowest_i = 0;
+    int lowest_val = a[0];
+    for(int i = 1; i < len; i++)
+    {
+        if(a[i] < lowest_val)
+        {
+            lowest_i = i;
+            lowest_val = a[i];
+        }
+    }
+    return lowest_i;
+}
+
 
 void* thread_cmd(void * arg)
 {
@@ -388,48 +403,53 @@ void* thread_cmd(void * arg)
         		cout << "Média: " << stats_frame_size_total/stats_frame_count << " bytes" << endl;
         		break;
         	}
-        	case 2:{
+        	case 2:
+            {
         		cout << "Quantidade e Porcentagem ARP Request: " << stats_arp_request_count;
                     printf(", %.2f%%\n", (stats_arp_request_count * 100.0)/ stats_frame_count);
         		cout << "Quantidade e Porcentagem ARP Reply: " << stats_arp_reply_count;
         			printf(", %.2f%%\n", (stats_arp_reply_count * 100.0)/ stats_frame_count);
         		break;
         	}
-        	case 3:{
+        	case 3:
+            {
         		cout << "Quantidade e porcentagem de pacotes ICMP: " << stats_ip_icmp_count;
                     printf(", %.2f%%\n", (stats_ip_icmp_count * 100.0)/ stats_frame_count);
         		break;
         	}
-        	case 4:{
+        	case 4:
+            {
         		cout << "Quantidade e porcentagem de ICMP Echo Request: " << stats_ip_icmp_echo_request_count;
                     printf(", %.2f%%\n", (stats_ip_icmp_echo_request_count * 100.0)/ stats_frame_count);
         		cout << "Quantidade e porcentagem de ICMP Echo Reply: " << stats_ip_icmp_echo_reply_count;
                     printf(", %.2f%%\n", (stats_ip_icmp_echo_reply_count * 100.0)/ stats_frame_count);
         		break;
         	}
-            /*
-        	case 5:{
-        		cout << "Lista com os 5 IPs mais acessados na rede" << endl;
+        	case 5:
+            {
+        		cout << "Lista com os 5 IPs mais acessados na rede:" << endl;
         
         		int amount[5] = {0,0,0,0,0};
         		uint32_t dest[5];
         		for( auto it = stats_ip_access_count.begin(); it != stats_ip_access_count.end(); ++it )
-                    for(int i = 4; i >= 0; ++i)
-                        if(amount[i] > it->second) {
-                            if(i < 4) {
-                                amount[i+1] = it->second;
-                                dest[i+1] = it->first;
-                            }
-                            break;
-                        }
-                for( int i = 0; i < 5; ++i )
+                {
+                    int key = it->first;
+                    int val = it->second;
+                    int i = get_lowest_i(amount, 5);
+                    if (val > amount[i])
+                    {
+                        dest[i] = key;
+                        amount[i] = val;
+                    }
+                }
+
+                for( int i = 0; i < 5; i++ )
                 {
                     print_ip(dest[i]);
-                    cout << " acessado " << amount[i] << " vezes " << endl;
+                    cout << ", " << amount[i] << " vezes." << endl;
                 }
         		break;
         	}
-            */
         	case 6:{
         		cout << "Quantidade e porcentagem de pacotes UDP: " << stats_ip_udp_count;
         			printf(", %.2f%%\n", (stats_ip_udp_count * 100.0)/ stats_frame_count);
