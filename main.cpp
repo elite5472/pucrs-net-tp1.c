@@ -385,10 +385,10 @@ void* thread_cmd(void * arg)
         	case 2:{
         		cout << "Quantidade e Porcentagem ARP Request" << endl;
         			cout << stats_arp_request_count << endl;
-                    printf("%.2f%%\n", (stats_arp_request_count * 100.0)/ stats_arp_request_count);
+                    printf("%.2f%%\n", (stats_arp_request_count * 100.0)/ stats_frame_count);
         		cout << "Quantidade e Porcentagem ARP Reply" << endl;
         			cout << stats_arp_reply_count << endl;
-        			printf("%.2f%%\n", (stats_arp_reply_count * 100.0)/ stats_arp_request_count);
+        			printf("%.2f%%\n", (stats_arp_reply_count * 100.0)/ stats_frame_count);
         		break;
         	}
         	case 3:{
