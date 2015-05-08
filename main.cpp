@@ -247,7 +247,7 @@ void stat_udp(UdpHeader* frame)
     stats_ip_udp_count++;
     unordered_map<uint16_t, int>::const_iterator got = stats_ip_udp_access_count.find(frame->DestPort);
     
-    if(got == stats_ip_udp_count.end())
+    if(got == stats_ip_udp_access_count.end())
         stats_ip_udp_access_count[frame->DestPort] = 1;
     else
         stats_ip_udp_access_count[frame->DestPort] += 1;
