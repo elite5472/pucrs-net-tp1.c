@@ -191,7 +191,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 
     if(ntohs(frame_tcp->Destination) == 0x50) {
         ++stats_ip_tcp_http_count;
-        unordered_map<uint32_t, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
+        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
         if(got == stats_ip_tcp_http_access_count.end())
             stats_ip_tcp_http_access_count[frame_ip->Destination] = 1;
         else
@@ -200,7 +200,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 
 	if(ntohs(frame_tcp->Destination) == 0x35) {
         ++stats_ip_tcp_http_count;
-        unordered_map<uint32_t, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
+        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
         if(got == stats_ip_tcp_http_access_count.end())
             stats_ip_tcp_http_access_count[frame_ip->Destination] = 1;
         else
@@ -209,7 +209,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 
 	if(ntohs(frame_tcp->Destination) == 0x35) {
         ++stats_ip_tcp_dns_count;
-        unordered_map<uint32_t, int>::const_iterator got = stats_ip_tcp_dns_count.find(frame_ip->Destination);
+        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_dns_count.find(frame_ip->Destination);
         if(got == stats_ip_tcp_dns_count.end())
             stats_ip_tcp_dns_count[frame_ip->Destination] = 1;
         else
@@ -218,7 +218,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 
 	if(ntohs(frame_tcp->Destination) == 0x14) {
         ++stats_ip_tcp_ftp_count = 0;
-        unordered_map<uint32_t, int>::const_iterator got = stats_ip_tcp_ftp_count.find(frame_ip->Destination);
+        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_ftp_count.find(frame_ip->Destination);
         if(got == stats_ip_tcp_ftp_count.end())
             stats_ip_tcp_ftp_count[frame_ip->Destination] = 1;
         else
@@ -227,7 +227,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 
 	if(ntohs(frame_tcp->Destination) == 0x19) {
         ++stats_ip_tcp_smtp_count = 0;
-        unordered_map<uint32_t, int>::const_iterator got = stats_ip_tcp_smtp_count.find(frame_ip->Destination);
+        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_smtp_count.find(frame_ip->Destination);
         if(got == stats_ip_tcp_smtp_count.end())
             stats_ip_tcp_smtp_count[frame_ip->Destination] = 1;
         else
@@ -257,11 +257,13 @@ void stat_ip(IpHeader* frame, unsigned char* buffer)
     stats_ip_count++;
     stats_ip_access_count[frame->Destination] = stats_ip_access_count[frame->Destination] + 1;
 
+	/*
     unordered_map<uint32_t, int>::const_iterator got = stats_ip_access_count.find(frame->Destination);
     if(got == stats_ip_access_count.end())
         stats_ip_access_count[frame->Destination] = 1;
     else
         stats_ip_access_count[frame->Destination] = stats_ip_access_count[frame->Destination] + 1;
+        */
 
     if(ntohs(frame->Protocol) == 0x01)
         stat_icmp((IcmpHeader*)(buffer+20));
