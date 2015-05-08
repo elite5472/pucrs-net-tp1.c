@@ -346,6 +346,8 @@ void printMenu(){
 	cout << "\t" << i++ << ") Quantidade e porcentagem de pacotes DNS" << endl;
 	cout << "\t" << i++ << ") Quantidade e porcentagem de pacotes FTP" << endl;
 	cout << "\t" << i++ << ") Lista com os 5 sites mais acessados" << endl << endl;
+    
+    cout << "\t" << i++ << ") Sair" << endl << endl;
 }
 
 int get_lowest_i(int* a, int len)
@@ -548,6 +550,11 @@ void* thread_cmd(void * arg)
                 }
         		break;
         	 }
+             case 16:
+             {
+                 exit(0);
+                 break;
+             }
         }
     }
 }
