@@ -179,7 +179,7 @@ void stat_icmp(IcmpHeader* frame)
     if(ntohs(frame->Type) == 0x08)
         stats_ip_icmp_echo_request_count++;
 }
-
+/*
 void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 {
     ++stats_ip_tcp_count;
@@ -191,7 +191,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 
     if(ntohs(frame_tcp->Destination) == 0x50) {
         ++stats_ip_tcp_http_count;
-        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
+        unordered_map<string, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
         if(got == stats_ip_tcp_http_access_count.end())
             stats_ip_tcp_http_access_count[frame_ip->Destination] = 1;
         else
@@ -200,7 +200,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 
 	if(ntohs(frame_tcp->Destination) == 0x35) {
         ++stats_ip_tcp_http_count;
-        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
+        unordered_map<string, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
         if(got == stats_ip_tcp_http_access_count.end())
             stats_ip_tcp_http_access_count[frame_ip->Destination] = 1;
         else
@@ -251,6 +251,7 @@ void stat_udp(UdpHeader* frame)
         stats_ip_udp_access_count[frame->DestPort] += 1;
 
 }
+*/
 
 void stat_ip(IpHeader* frame, unsigned char* buffer)
 {
