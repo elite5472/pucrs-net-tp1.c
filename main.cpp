@@ -131,10 +131,10 @@ unordered_map<uint16_t, int> stats_ip_udp_access_count = {};
 
 int stats_ip_tcp_initiated_count = 0; // tcp connections initiated count
 
-int stats_ip_tcp_http_count = 0;
-int stats_ip_tcp_dns_count = 0;
-int stats_ip_tcp_ftp_count = 0; //20 decimal
-int stats_ip_tcp_smtp_count = 0; //25 decimal
+int stats_ip_port_http_count = 0;
+int stats_ip_port_https_count = 0;
+int stats_ip_port_dns_count = 0;
+int stats_ip_port_ftp_count = 0;
 
 unordered_map<string, int> stats_ip_tcp_http_access_count;
 
@@ -192,55 +192,21 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
     else
         stats_ip_tcp_access_count[frame_tcp->DestPort] += 1;
 
-/*
-    if(ntohs(frame_tcp->Destination) == 0x50) //This is ICMP, not HTTP
+    if(ntohs(frame_tcp->Destination) == 80)
     {
-        //stats_ip_tcp_http_count++;
-       
-        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
-        if(got == stats_ip_tcp_http_access_count.end())
-            stats_ip_tcp_http_access_count[frame_ip->Destination] = 1;
-        else
-            stats_ip_tcp_http_access_count[frame_ip->Destination] += 1;
-        
+        stats_ip_port_http_count++;
+    }
+    
+    if(ntohs(frame_tcp->Destination) == 443)
+    {
+        stats_ip_port_https_count++;
+    }
+    
+    if(ntohs(frame_tcp->Destination) == 21)
+    {
+        stats_ip_port_ftp_count++;
     }
 
-	if(ntohs(frame_tcp->Destination) == 0x35) {
-        ++stats_ip_tcp_http_count;
-        unordered_map<string, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
-        if(got == stats_ip_tcp_http_access_count.end())
-            stats_ip_tcp_http_access_count[frame_ip->Destination] = 1;
-        else
-            stats_ip_tcp_http_access_count[frame_ip->Destination] += 1;
-    }
-
-	if(ntohs(frame_tcp->Destination) == 0x35) {
-        ++stats_ip_tcp_dns_count;
-        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_dns_count.find(frame_ip->Destination);
-        if(got == stats_ip_tcp_dns_count.end())
-            stats_ip_tcp_dns_count[frame_ip->Destination] = 1;
-        else
-            stats_ip_tcp_dns_count[frame_ip->Destination] += 1;
-    }
-
-	if(ntohs(frame_tcp->Destination) == 0x14) {
-        ++stats_ip_tcp_ftp_count = 0;
-        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_ftp_count.find(frame_ip->Destination);
-        if(got == stats_ip_tcp_ftp_count.end())
-            stats_ip_tcp_ftp_count[frame_ip->Destination] = 1;
-        else
-            stats_ip_tcp_ftp_count[frame_ip->Destination] += 1;
-    }
-
-	if(ntohs(frame_tcp->Destination) == 0x19) {
-        ++stats_ip_tcp_smtp_count = 0;
-        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_smtp_count.find(frame_ip->Destination);
-        if(got == stats_ip_tcp_smtp_count.end())
-            stats_ip_tcp_smtp_count[frame_ip->Destination] = 1;
-        else
-            stats_ip_tcp_smtp_count[frame_ip->Destination] += 1;
-    }
-*/
     int ack = (frame_tcp->Flags >> 4) & 1;
     int syn = frame_tcp->Flags & 1;
     if(ack == 1 && syn == 0)                // canal tcp - 1 passo: ack = 0 e syn = 1, 2 passo: ack = 1 e syn = 1, 3 passo: ack = 1 e syn = 0
@@ -256,6 +222,16 @@ void stat_udp(UdpHeader* frame)
         stats_ip_udp_access_count[frame->DestPort] = 1;
     else
         stats_ip_udp_access_count[frame->DestPort] += 1;
+        
+    if(ntohs(frame->Destination) == 53)
+    {
+        stats_ip_tcp_dns_count++;
+    }
+    
+    if(ntohs(frame_tcp->Destination) == 21)
+    {
+        stats_ip_port_ftp_count++;
+    }
 
 }
 
@@ -336,29 +312,31 @@ void* thread_listener(void * arg)
 }
 
 void printMenu(){
-	cout << endl << "Geral" << endl;
-	cout << "\t1) Apresentar min/max/média do tamanho dos pacotes recebidos" << endl;
+    int i = 1;
+	cout << endl << "Geral:" << endl;
+	cout << "\t" << i++ << ") Apresentar min/max/média do tamanho dos pacotes recebidos" << endl;
 
-	cout << endl << "Nível de Enlace" << endl;
-	cout << "\t2) Quantidade e porcentagem de ARP Requests e ARP Reply" << endl;
+	cout << endl << "Nível de Enlace:" << endl;
+	cout << "\t" << i++ << ") Quantidade e porcentagem de ARP Requests e ARP Reply" << endl;
 
-	cout << endl << "Nível de Rede" << endl;
-	cout << "\t3) Quantidade e porcentagem de pacotes ICMP" << endl;
-	cout << "\t4) Quantidade e porcentagem de ICMP Echo Request e ICMP Echo Reply" << endl;
-	cout << "\t5) Lista com os 5 IPs mais acessados na rede" << endl;
+	cout << endl << "Nível de Rede:" << endl;
+	cout << "\t" << i++ << ") Quantidade e porcentagem de pacotes ICMP" << endl;
+	cout << "\t" << i++ << ") Quantidade e porcentagem de ICMP Echo Request e ICMP Echo Reply" << endl;
+	cout << "\t" << i++ << ") Lista com os 5 IPs mais acessados na rede" << endl;
 
-	cout << endl << "Nível de Transporte" << endl;
-	cout << "\t6) Quantidade e porcentagem de pacotes UDP" << endl;
-	cout << "\t7) Quantidade e porcentagem de pacotes TCP" << endl;
-	cout << "\t8) Número de conexões TCP iniciadas" << endl;
-	cout << "\t9) Lista com as 5 portas TCP mais acessadas" << endl;
-	cout << "\t10) Lista com as 5 portas UDP mais acessadas" << endl;
+	cout << endl << "Nível de Transporte:" << endl;
+	cout << "\t" << i++ << ") Quantidade e porcentagem de pacotes UDP" << endl;
+	cout << "\t" << i++ << ") Quantidade e porcentagem de pacotes TCP" << endl;
+	cout << "\t" << i++ << ") Número de conexões TCP iniciadas" << endl;
+	cout << "\t" << i++ << ") Lista com as 5 portas TCP mais acessadas" << endl;
+	cout << "\t" << i++ << ") Lista com as 5 portas UDP mais acessadas" << endl;
 
-	cout << endl << "Nível de Aplicação" << endl;
-	cout << "\t11) Quantidade e porcentagem de pacotes HTTP" << endl;
-	cout << "\t12) Quantidade e porcentagem de pacotes DNS" << endl;
-	cout << "\t13) Quantidade e porcentagem para outros 2 protocolos de aplicação quaisquer" << endl;
-	cout << "\t14) Lista com os 5 sites mais acessados" << endl << endl;
+	cout << endl << "Nível de Aplicação:" << endl;
+	cout << "\t" << i++ << ") Quantidade e porcentagem de pacotes HTTP" << endl;
+    cout << "\t" << i++ << ") Quantidade e porcentagem de pacotes HTTPS" << endl;
+	cout << "\t" << i++ << ") Quantidade e porcentagem de pacotes DNS" << endl;
+	cout << "\t" << i++ << ") Quantidade e porcentagem de pacotes FTP" << endl;
+	cout << "\t" << i++ << ") Lista com os 5 sites mais acessados" << endl << endl;
 }
 
 int get_lowest_i(int* a, int len)
@@ -514,24 +492,23 @@ void* thread_cmd(void * arg)
         		break;
         	}
         	case 11:{
-        		cout << "Quantidade e porcentagem de pacotes HTTP" << endl;
-        			cout << stats_ip_tcp_http_count << endl;
-        			cout <<  (stats_ip_tcp_http_count * 100)/ stats_frame_count << "%" << endl;
+                cout << "Quantidade e porcentagem de pacotes HTTP: " << stats_ip_port_http_count;
+                    printf(", %.2f%%\n", (stats_ip_port_http_count * 100.0)/ stats_frame_count);
         		break;
         	}
-        	case 12:{
-        		cout << "Quantidade e porcentagem de pacotes DNS" << endl;
-        			cout << stats_ip_tcp_dns_count << endl;
-        			cout <<  (stats_ip_tcp_dns_count * 100)/ stats_frame_count << "%" << endl;
+            case 12:{
+                cout << "Quantidade e porcentagem de pacotes HTTPS: " << stats_ip_port_https_count;
+                    printf(", %.2f%%\n", (stats_ip_port_https_count * 100.0)/ stats_frame_count);
         		break;
         	}
         	case 13:{
-        		cout << "Quantidade e porcentagem de pacotes FTP" << endl;
-        			cout << stats_ip_tcp_ftp_count << endl;
-        			cout <<  (stats_ip_tcp_ftp_count * 100)/ stats_frame_count << "%" << endl;
-        		cout << "Quantidade e porcentagem de pacotes SMTP" << endl;
-        			cout << stats_ip_tcp_smtp_count << endl;
-        			cout <<  (stats_ip_tcp_smtp_count * 100)/ stats_frame_count << "%" << endl;
+        		cout << "Quantidade e porcentagem de pacotes DNS: " << stats_ip_port_dns_count;
+                    printf(", %.2f%%\n", (stats_ip_port_dns_count * 100.0)/ stats_frame_count);
+        		break;
+        	}
+        	case 14:{
+        		cout << "Quantidade e porcentagem de pacotes FTP: " << stats_ip_port_ftp_count;
+                    printf(", %.2f%%\n", (stats_ip_port_ftp_count * 100.0)/ stats_frame_count);
         		break;
         	}
             /*
