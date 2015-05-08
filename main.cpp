@@ -373,6 +373,12 @@ void* thread_cmd(void * arg)
         cout << endl << "Escolha uma opção: ";
         cin >> cod;
         
+        if(stats_frame_count == 0)
+        {
+            cout << "Nemum pacote foi interceptado, tente de novo." << endl;
+            continue;
+        }
+        
         switch(cod)
         {
         	case 1:
@@ -426,13 +432,12 @@ void* thread_cmd(void * arg)
             */
         	case 6:{
         		cout << "Quantidade e porcentagem de pacotes UDP" << stats_ip_udp_count;
-        			printf(", %.2f%%\n", (stats_ip_udp_count * 100)/ stats_frame_count);
+        			printf(", %.2f%%\n", (stats_ip_udp_count * 100.0)/ stats_frame_count);
         		break;
         	}
         	case 7:{
-        		cout << "Quantidade e porcentagem de pacotes TCP" << endl;
-        			cout << stats_ip_tcp_count << endl;
-        			cout <<  (stats_ip_tcp_count * 100)/ stats_frame_count << "%" << endl;
+        		cout << "Quantidade e porcentagem de pacotes TCP" << stats_ip_tcp_count;
+        			printf(", %.2f%%\n", (stats_ip_tcp_count * 100.0)/ stats_frame_count);
         		break;
         	}
         	case 8:{
