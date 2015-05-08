@@ -270,16 +270,14 @@ void stat_ip(IpHeader* frame, unsigned char* buffer)
         stats_ip_access_count[frame->Destination] = 1;
     else
         stats_ip_access_count[frame->Destination] = stats_ip_access_count[frame->Destination] + 1;
-        
-    printf("%x\n", ntohs(frame->Protocol));
 
-    if(ntohs(frame->Protocol) == 0x01)
+    if(ntohs(frame->Protocol) == 0x0100)
         stat_icmp((IcmpHeader*)(buffer+20));
 
-    if(ntohs(frame->Protocol) == 0x06)
+    if(ntohs(frame->Protocol) == 0x0600)
         stat_tcp((TcpHeader*)(buffer+20), frame);
 
-    if(ntohs(frame->Protocol) == 0x11)
+    if(ntohs(frame->Protocol) == 0x1100)
         stat_udp((UdpHeader*)(buffer+20));
 
     //printf("To: "); print_ip(ntohl(frame->Destination));
