@@ -376,7 +376,6 @@ int get_lowest_i(int* a, int len)
     return lowest_i;
 }
 
-
 void* thread_cmd(void * arg)
 {
  
@@ -430,7 +429,7 @@ void* thread_cmd(void * arg)
         		cout << "Lista com os 5 IPs mais acessados na rede:" << endl;
         
         		int amount[5] = {0,0,0,0,0};
-        		uint32_t dest[5];
+        		uint32_t dest[5] = {0,0,0,0,0};
         		for( auto it = stats_ip_access_count.begin(); it != stats_ip_access_count.end(); ++it )
                 {
                     int key = it->first;
@@ -443,7 +442,7 @@ void* thread_cmd(void * arg)
                     }
                 }
 
-                for( int i = 0; i < 5; i++ )
+                for( int i = 0; i < 5; i++ ) if (dest[i] != 0)
                 {
                     print_ip(dest[i]);
                     cout << ", " << amount[i] << " vezes." << endl;
