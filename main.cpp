@@ -112,6 +112,7 @@ int stats_frame_size_min = 0;
 int stats_frame_size_max = 0;
 int stats_frame_size_total = 0;
 
+int stats_arp_count = 0;
 int stats_arp_request_count = 0;
 int stats_arp_reply_count = 0;
 
@@ -165,6 +166,7 @@ void print_ip(uint32_t ip)
 void stat_arp(ArpHeader* frame)
 {
     MacAddress zero = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    stats_arp_count++;
     if (mac_equal(frame->TargetHardwareAddress, zero))
         stats_arp_request_count++;
     else
@@ -259,13 +261,12 @@ void stat_ip(IpHeader* frame, unsigned char* buffer)
     stats_ip_count++;
     stats_ip_access_count[frame->Destination] = stats_ip_access_count[frame->Destination] + 1;
 
-	/*
+	
     unordered_map<uint32_t, int>::const_iterator got = stats_ip_access_count.find(frame->Destination);
     if(got == stats_ip_access_count.end())
         stats_ip_access_count[frame->Destination] = 1;
     else
         stats_ip_access_count[frame->Destination] = stats_ip_access_count[frame->Destination] + 1;
-        */
 
     if(ntohs(frame->Protocol) == 0x01)
         stat_icmp((IcmpHeader*)(buffer+20));
