@@ -136,7 +136,7 @@ int stats_ip_port_https_count = 0;
 int stats_ip_port_dns_count = 0;
 int stats_ip_port_ftp_count = 0;
 
-unordered_map<string, int> stats_ip_tcp_http_access_count;
+unordered_map<uint32_t, int> stats_ip_website_access_count;
 
 void print_mac(MacAddress s)
 {
@@ -200,6 +200,15 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
     if(ntohs(frame_tcp->DestPort) == 443)
     {
         stats_ip_port_https_count++;
+    }
+    
+    if(ntohs(frame_tcp->DestPort) == 80 || ntohs(frame_tcp->DestPort) == 443)
+    {
+        unordered_map<uint32_t, int>::const_iterator got = stats_ip_website_access_count.find(frame->Destination);
+        if(got == stats_ip_website_access_count.end())
+            stats_ip_website_access_count[frame_ip->Destination] = 1;
+        else
+            stats_ip_website_access_count[frame_ip->Destination] = stats_ip_website_access_count[frame_ip->Destination] + 1;
     }
     
     if(ntohs(frame_tcp->DestPort) == 21)
@@ -491,48 +500,54 @@ void* thread_cmd(void * arg)
                 }
         		break;
         	}
-        	case 11:{
+        	case 11:
+            {
                 cout << "Quantidade e porcentagem de pacotes HTTP: " << stats_ip_port_http_count;
                     printf(", %.2f%%\n", (stats_ip_port_http_count * 100.0)/ stats_frame_count);
         		break;
         	}
-            case 12:{
+            case 12:
+            {
                 cout << "Quantidade e porcentagem de pacotes HTTPS: " << stats_ip_port_https_count;
                     printf(", %.2f%%\n", (stats_ip_port_https_count * 100.0)/ stats_frame_count);
         		break;
         	}
-        	case 13:{
+        	case 13:
+            {
         		cout << "Quantidade e porcentagem de pacotes DNS: " << stats_ip_port_dns_count;
                     printf(", %.2f%%\n", (stats_ip_port_dns_count * 100.0)/ stats_frame_count);
         		break;
         	}
-        	case 14:{
+        	case 14:
+            {
         		cout << "Quantidade e porcentagem de pacotes FTP: " << stats_ip_port_ftp_count;
                     printf(", %.2f%%\n", (stats_ip_port_ftp_count * 100.0)/ stats_frame_count);
         		break;
         	}
-            /*
-        	case 14:{
-        		cout << "Lista com os 5 sites mais acessados" << endl;
+        	case 15:
+            {
+        		cout << "Lista com os 5 sites mais acessados: " << endl;
         		int amount[5] = {0,0,0,0,0};
-        		uint32_t dest[5];
-        		for( auto it = stats_ip_tcp_http_access_count.begin(); it != stats_ip_tcp_http_access_count.end(); ++it )
-                    for(int i = 4; i >= 0; ++i)
-                        if(amount[i] > it->second) {
-                            if(i < 4) {
-                                amount[i+1] = it->second;
-                                dest[i+1] = it->first;
-                            }
-                            break;
-                        }
-                for( int i = 0; i < 5; ++i )
+        		uint32_t dest[5] = {0,0,0,0,0};
+        		for(auto it = stats_ip_website_access_count.begin(); it != stats_ip_website_access_count.end(); it++)
+                {
+                    int key = it->first;
+                    int val = it->second;
+                    int i = get_lowest_i(amount, 5);
+                    if (val > amount[i])
+                    {
+                        dest[i] = key;
+                        amount[i] = val;
+                    }
+                }
+
+                for( int i = 0; i < 5; i++ ) if (dest[i] != 0)
                 {
                     print_ip(dest[i]);
-                    cout << " acessado " << amount[i] << " vezes " << endl;
+                    cout << ", " << amount[i] << " vezes." << endl;
                 }
         		break;
-               
-        	 }*/
+        	 }
         }
     }
 }
