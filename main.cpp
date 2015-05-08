@@ -430,7 +430,7 @@ void* thread_cmd(void * arg)
         
         		int amount[5] = {0,0,0,0,0};
         		uint32_t dest[5] = {0,0,0,0,0};
-        		for( auto it = stats_ip_access_count.begin(); it != stats_ip_access_count.end(); ++it )
+        		for(auto it = stats_ip_access_count.begin(); it != stats_ip_access_count.end(); it++)
                 {
                     int key = it->first;
                     int val = it->second;
@@ -449,41 +449,48 @@ void* thread_cmd(void * arg)
                 }
         		break;
         	}
-        	case 6:{
+        	case 6:
+            {
         		cout << "Quantidade e porcentagem de pacotes UDP: " << stats_ip_udp_count;
         			printf(", %.2f%%\n", (stats_ip_udp_count * 100.0)/ stats_frame_count);
         		break;
         	}
-        	case 7:{
+        	case 7:
+            {
         		cout << "Quantidade e porcentagem de pacotes TCP: " << stats_ip_tcp_count;
         			printf(", %.2f%%\n", (stats_ip_tcp_count * 100.0)/ stats_frame_count);
         		break;
         	}
-        	case 8:{
+        	case 8:
+            {
         		cout << "Número de conexões TCP iniciadas: " << stats_ip_tcp_initiated_count;
         		break;
         	}
-            /*
-        	case 9:{
-        		cout << "Lista com as 5 portas TCP mais acessadas" << endl;
-        		int amount[5] = {0,0,0,0,0};
-        		uint32_t dest[5];
-        		for( auto it = stats_ip_tcp_access_count.begin(); it != stats_ip_tcp_access_count.end(); ++it )
-                    for(int i = 4; i >= 0; ++i)
-                        if(amount[i] > it->second) {
-                            if(i < 4) {
-                                amount[i+1] = it->second;
-                                dest[i+1] = it->first;
-                            }
-                            break;
-                        }
-                for( int i = 0; i < 5; ++i )
+        	case 9:
+            {
+        		cout << "Lista com as 5 portas TCP mais acessadas: " << endl;
+                
+                int amount[5] = {0,0,0,0,0};
+        		uint16_t dest[5] = {0,0,0,0,0};
+        		for(auto it = stats_ip_tcp_access_count.begin(); it != stats_ip_tcp_access_count.end(); it++)
                 {
-                    cout << "Porta TCP " << dest[i] << " acessada " << amount[i] << " vezes " << endl;
+                    int key = it->first;
+                    int val = it->second;
+                    int i = get_lowest_i(amount, 5);
+                    if (val > amount[i])
+                    {
+                        dest[i] = key;
+                        amount[i] = val;
+                    }
+                }
+
+                for( int i = 0; i < 5; i++ ) if (dest[i] != 0)
+                {
+                    cout << dest[i] << ", " << amount[i] << " vezes." << endl;
                 }
         		break;
         	}
-            */
+            
             /*
         	case 10:{
         		cout << "Lista com as 5 portas UDP mais acessadas" << endl;
