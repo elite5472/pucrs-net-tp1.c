@@ -363,7 +363,7 @@ void printMenu(){
 
 void* thread_cmd(void * arg)
 {
-    /*
+ 
 	int cod;
 
 	printMenu();
@@ -522,7 +522,7 @@ void* thread_cmd(void * arg)
 			break;
 		}
 	}
-    */
+  
 }
 
 int main(int argc, char *argv[])
