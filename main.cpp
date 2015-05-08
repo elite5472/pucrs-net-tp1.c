@@ -173,11 +173,11 @@ void stat_arp(ArpHeader* frame)
 
 void stat_icmp(IcmpHeader* frame)
 {
-    ++stats_ip_icmp_count;
+    stats_ip_icmp_count++;
     if(ntohs(frame->Type) == 0x00)
-        ++stats_ip_icmp_echo_reply_count;
+        stats_ip_icmp_echo_reply_count++;
     if(ntohs(frame->Type) == 0x08)
-        ++stats_ip_icmp_echo_request_count;
+        stats_ip_icmp_echo_request_count++;
 }
 
 void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
@@ -242,8 +242,9 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 
 void stat_udp(UdpHeader* frame)
 {
-    ++stats_ip_udp_count;
-    unordered_map<uint32_t, int>::const_iterator got = stats_ip_udp_access_count.find(frame->DestPort);
+    stats_ip_udp_count++;
+    unordered_map<uint16_t, int>::const_iterator got = stats_ip_udp_access_count.find(frame->DestPort);
+    
     if(got == stats_ip_udp_count.end())
         stats_ip_udp_access_count[frame->DestPort] = 1;
     else
@@ -324,7 +325,7 @@ void* thread_listener(void * arg)
 
         stat_ethernet(ethheader, buffer);
 
-        printf("Frame #%d, Min %d bytes, Max %d bytes, ArpReq #%d, ArpRep #%d \n", stats_frame_count, stats_frame_size_min, stats_frame_size_max, stats_arp_request_count, stats_arp_reply_count);
+        //printf("Frame #%d, Min %d bytes, Max %d bytes, ArpReq #%d, ArpRep #%d \n", stats_frame_count, stats_frame_size_min, stats_frame_size_max, stats_arp_request_count, stats_arp_reply_count);
     }
 }
 void printMenu(){
