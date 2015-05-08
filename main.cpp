@@ -355,7 +355,7 @@ void printMenu(){
 	cout << "14) Lista com os 5 sites mais acessados" << endl;
 }
 
-
+/*
 void* thread_cmd(void * arg)
 {
 	int cod;
@@ -517,6 +517,7 @@ void* thread_cmd(void * arg)
 		}
 	}
 }
+*/
 
 int main(int argc, char *argv[])
 {
