@@ -334,29 +334,29 @@ void* thread_listener(void * arg)
 }
 
 void printMenu(){
-	cout << "Geral" << endl;
-	cout << "1) Apresentar min/max/média do tamanho dos pacotes recebidos" << endl;
+	cout << endl << "Geral" << endl;
+	cout << "\t1) Apresentar min/max/média do tamanho dos pacotes recebidos" << endl;
 
-	cout << "Nível de Enlace" << endl;
-	cout << "2) Quantidade e porcentagem de ARP Requests e ARP Reply" << endl;
+	cout << endl << "Nível de Enlace" << endl;
+	cout << "\t2) Quantidade e porcentagem de ARP Requests e ARP Reply" << endl;
 
-	cout << "Nível de Rede" << endl;
-	cout << "3) Quantidade e porcentagem de pacotes ICMP" << endl;
-	cout << "4) Quantidade e porcentagem de ICMP Echo Request e ICMP Echo Reply" << endl;
-	cout << "5) Lista com os 5 IPs mais acessados na rede" << endl;
+	cout << endl << "Nível de Rede" << endl;
+	cout << "\t3) Quantidade e porcentagem de pacotes ICMP" << endl;
+	cout << "\t4) Quantidade e porcentagem de ICMP Echo Request e ICMP Echo Reply" << endl;
+	cout << "\t5) Lista com os 5 IPs mais acessados na rede" << endl;
 
-	cout << "Nível de Transporte" << endl;
-	cout << "6) Quantidade e porcentagem de pacotes UDP" << endl;
-	cout << "7) Quantidade e porcentagem de pacotes TCP" << endl;
-	cout << "8) Número de conexões TCP iniciadas" << endl;
-	cout << "9) Lista com as 5 portas TCP mais acessadas" << endl;
-	cout << "10) Lista com as 5 portas UDP mais acessadas" << endl;
+	cout << endl << "Nível de Transporte" << endl;
+	cout << "\t6) Quantidade e porcentagem de pacotes UDP" << endl;
+	cout << "\t7) Quantidade e porcentagem de pacotes TCP" << endl;
+	cout << "\t8) Número de conexões TCP iniciadas" << endl;
+	cout << "\t9) Lista com as 5 portas TCP mais acessadas" << endl;
+	cout << "\t10) Lista com as 5 portas UDP mais acessadas" << endl;
 
-	cout << "Nível de Aplicação" << endl;
-	cout << "11) Quantidade e porcentagem de pacotes HTTP" << endl;
-	cout << "12) Quantidade e porcentagem de pacotes DNS" << endl;
-	cout << "13) Quantidade e porcentagem para outros 2 protocolos de aplicação quaisquer" << endl;
-	cout << "14) Lista com os 5 sites mais acessados" << endl << endl;
+	cout << endl << "Nível de Aplicação" << endl;
+	cout << "\t11) Quantidade e porcentagem de pacotes HTTP" << endl;
+	cout << "\t12) Quantidade e porcentagem de pacotes DNS" << endl;
+	cout << "\t13) Quantidade e porcentagem para outros 2 protocolos de aplicação quaisquer" << endl;
+	cout << "\t14) Lista com os 5 sites mais acessados" << endl << endl;
 }
 
 
