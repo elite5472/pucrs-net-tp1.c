@@ -179,9 +179,10 @@ void stat_icmp(IcmpHeader* frame)
     if(ntohs(frame->Type) == 0x08)
         stats_ip_icmp_echo_request_count++;
 }
-/*
+
 void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 {
+    /*
     ++stats_ip_tcp_count;
     unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_access_count.find(frame_tcp->DestPort);
     if(got == stats_ip_tcp_access_count.end())
@@ -238,6 +239,7 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
     int syn = frame_tcp->Flags & 1
     if(ack == 1 && syn == 0)                // canal tcp - 1 passo: ack = 0 e syn = 1, 2 passo: ack = 1 e syn = 1, 3 passo: ack = 1 e syn = 0
         ++stats_ip_tcp_initiated_count;
+       */
 }
 
 void stat_udp(UdpHeader* frame)
@@ -251,7 +253,6 @@ void stat_udp(UdpHeader* frame)
         stats_ip_udp_access_count[frame->DestPort] += 1;
 
 }
-*/
 
 void stat_ip(IpHeader* frame, unsigned char* buffer)
 {
@@ -331,6 +332,7 @@ void* thread_listener(void * arg)
         //printf("Frame #%d, Min %d bytes, Max %d bytes, ArpReq #%d, ArpRep #%d \n", stats_frame_count, stats_frame_size_min, stats_frame_size_max, stats_arp_request_count, stats_arp_reply_count);
     }
 }
+
 void printMenu(){
 	cout << "Digite um Número:" << endl;
 	cout << "Geral" << endl;
@@ -358,9 +360,10 @@ void printMenu(){
 	cout << "14) Lista com os 5 sites mais acessados" << endl;
 }
 
-/*
+
 void* thread_cmd(void * arg)
 {
+    /*
 	int cod;
 
 	printMenu();
@@ -519,8 +522,8 @@ void* thread_cmd(void * arg)
 			break;
 		}
 	}
+    */
 }
-*/
 
 int main(int argc, char *argv[])
 {
