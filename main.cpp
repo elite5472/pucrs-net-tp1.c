@@ -401,9 +401,9 @@ void* thread_cmd(void * arg)
         		break;
         	}
         	case 4:{
-        		cout << "Quantidade e porcentagem de ICMP Echo Request" << stats_ip_icmp_echo_request_count;
+        		cout << "Quantidade e porcentagem de ICMP Echo Request: " << stats_ip_icmp_echo_request_count;
                     printf(", %.2f%%\n", (stats_ip_icmp_echo_request_count * 100.0)/ stats_frame_count);
-        		cout << "Quantidade e porcentagem de ICMP Echo Reply" << stats_ip_icmp_echo_reply_count;
+        		cout << "Quantidade e porcentagem de ICMP Echo Reply: " << stats_ip_icmp_echo_reply_count;
                     printf(", %.2f%%\n", (stats_ip_icmp_echo_reply_count * 100.0)/ stats_frame_count);
         		break;
         	}
@@ -431,18 +431,17 @@ void* thread_cmd(void * arg)
         	}
             */
         	case 6:{
-        		cout << "Quantidade e porcentagem de pacotes UDP" << stats_ip_udp_count;
+        		cout << "Quantidade e porcentagem de pacotes UDP: " << stats_ip_udp_count;
         			printf(", %.2f%%\n", (stats_ip_udp_count * 100.0)/ stats_frame_count);
         		break;
         	}
         	case 7:{
-        		cout << "Quantidade e porcentagem de pacotes TCP" << stats_ip_tcp_count;
+        		cout << "Quantidade e porcentagem de pacotes TCP: " << stats_ip_tcp_count;
         			printf(", %.2f%%\n", (stats_ip_tcp_count * 100.0)/ stats_frame_count);
         		break;
         	}
         	case 8:{
-        		cout << "Número de conexões TCP iniciadas" << endl;
-        		cout << stats_ip_tcp_initiated_count;
+        		cout << "Número de conexões TCP iniciadas: " << stats_ip_tcp_initiated_count;
         		break;
         	}
             /*
