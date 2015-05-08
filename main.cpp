@@ -225,10 +225,10 @@ void stat_udp(UdpHeader* frame)
         
     if(ntohs(frame->DestPort) == 53)
     {
-        stats_ip_tcp_dns_count++;
+        stats_ip_port_dns_count++;
     }
     
-    if(ntohs(frame_tcp->DestPort) == 21)
+    if(ntohs(frame->DestPort) == 21)
     {
         stats_ip_port_ftp_count++;
     }
