@@ -397,14 +397,14 @@ void* thread_cmd(void * arg)
         	}
         	case 3:{
         		cout << "Quantidade e porcentagem de pacotes ICMP: " << stats_ip_icmp_count;
-                    printf(", %.2f%%\n", (stats_ip_icmp_count * 100.0)/ stats_ip_count);
+                    printf(", %.2f%%\n", (stats_ip_icmp_count * 100.0)/ stats_frame_count);
         		break;
         	}
         	case 4:{
         		cout << "Quantidade e porcentagem de ICMP Echo Request" << stats_ip_icmp_echo_request_count;
-                    printf(", %.2f%%\n", (stats_ip_icmp_echo_request_count * 100.0)/ stats_ip_icmp_count);
+                    printf(", %.2f%%\n", (stats_ip_icmp_echo_request_count * 100.0)/ stats_frame_count);
         		cout << "Quantidade e porcentagem de ICMP Echo Reply" << stats_ip_icmp_echo_reply_count;
-                    printf(", %.2f%%\n", (stats_ip_icmp_echo_reply_count * 100.0)/ stats_ip_icmp_count);
+                    printf(", %.2f%%\n", (stats_ip_icmp_echo_reply_count * 100.0)/ stats_frame_count);
         		break;
         	}
             /*
