@@ -184,21 +184,25 @@ void stat_icmp(IcmpHeader* frame)
 
 void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
 {
-    /*
-    ++stats_ip_tcp_count;
+    stats_ip_tcp_count++;
+    
     unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_access_count.find(frame_tcp->DestPort);
     if(got == stats_ip_tcp_access_count.end())
         stats_ip_tcp_access_count[frame_tcp->DestPort] = 1;
     else
         stats_ip_tcp_access_count[frame_tcp->DestPort] += 1;
 
-    if(ntohs(frame_tcp->Destination) == 0x50) {
-        ++stats_ip_tcp_http_count;
-        unordered_map<string, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
+/*
+    if(ntohs(frame_tcp->Destination) == 0x50) //This is ICMP, not HTTP
+    {
+        //stats_ip_tcp_http_count++;
+       
+        unordered_map<uint16_t, int>::const_iterator got = stats_ip_tcp_http_access_count.find(frame_ip->Destination);
         if(got == stats_ip_tcp_http_access_count.end())
             stats_ip_tcp_http_access_count[frame_ip->Destination] = 1;
         else
             stats_ip_tcp_http_access_count[frame_ip->Destination] += 1;
+        
     }
 
 	if(ntohs(frame_tcp->Destination) == 0x35) {
@@ -236,12 +240,11 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
         else
             stats_ip_tcp_smtp_count[frame_ip->Destination] += 1;
     }
-
+*/
     int ack = (frame_tcp->Flags >> 4) & 1;
     int syn = frame_tcp->Flags & 1
     if(ack == 1 && syn == 0)                // canal tcp - 1 passo: ack = 0 e syn = 1, 2 passo: ack = 1 e syn = 1, 3 passo: ack = 1 e syn = 0
         ++stats_ip_tcp_initiated_count;
-       */
 }
 
 void stat_udp(UdpHeader* frame)
