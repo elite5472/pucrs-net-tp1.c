@@ -192,17 +192,17 @@ void stat_tcp(TcpHeader* frame_tcp, IpHeader* frame_ip)
     else
         stats_ip_tcp_access_count[frame_tcp->DestPort] += 1;
 
-    if(ntohs(frame_tcp->Destination) == 80)
+    if(ntohs(frame_tcp->DestPort) == 80)
     {
         stats_ip_port_http_count++;
     }
     
-    if(ntohs(frame_tcp->Destination) == 443)
+    if(ntohs(frame_tcp->DestPort) == 443)
     {
         stats_ip_port_https_count++;
     }
     
-    if(ntohs(frame_tcp->Destination) == 21)
+    if(ntohs(frame_tcp->DestPort) == 21)
     {
         stats_ip_port_ftp_count++;
     }
@@ -223,12 +223,12 @@ void stat_udp(UdpHeader* frame)
     else
         stats_ip_udp_access_count[frame->DestPort] += 1;
         
-    if(ntohs(frame->Destination) == 53)
+    if(ntohs(frame->DestPort) == 53)
     {
         stats_ip_tcp_dns_count++;
     }
     
-    if(ntohs(frame_tcp->Destination) == 21)
+    if(ntohs(frame_tcp->DestPort) == 21)
     {
         stats_ip_port_ftp_count++;
     }
