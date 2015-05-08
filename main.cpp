@@ -276,7 +276,7 @@ void stat_ip(IpHeader* frame, unsigned char* buffer)
     if(ntohs(frame->Protocol) == 0x11)
         stat_udp((UdpHeader*)(buffer+20));
 
-    printf("To: "); print_ip(ntohl(frame->Destination));
+    //printf("To: "); print_ip(ntohl(frame->Destination));
 }
 
 void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
@@ -334,7 +334,6 @@ void* thread_listener(void * arg)
 }
 
 void printMenu(){
-	cout << "Digite um Número:" << endl;
 	cout << "Geral" << endl;
 	cout << "1) Apresentar min/max/média do tamanho dos pacotes recebidos" << endl;
 
@@ -357,7 +356,7 @@ void printMenu(){
 	cout << "11) Quantidade e porcentagem de pacotes HTTP" << endl;
 	cout << "12) Quantidade e porcentagem de pacotes DNS" << endl;
 	cout << "13) Quantidade e porcentagem para outros 2 protocolos de aplicação quaisquer" << endl;
-	cout << "14) Lista com os 5 sites mais acessados" << endl;
+	cout << "14) Lista com os 5 sites mais acessados" << endl << endl;
 }
 
 
@@ -365,10 +364,11 @@ void* thread_cmd(void * arg)
 {
  
 	int cod;
+    printMenu();
+    
     while(true)
     {
-        printMenu();
-        
+        cout << endl << "Escolha uma opção: ";
         cin >> cod;
         
         switch(cod)
