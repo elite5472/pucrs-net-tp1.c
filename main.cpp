@@ -486,8 +486,7 @@ void* thread_cmd(void * arg)
 
                 for( int i = 0; i < 5; i++ ) if (dest[i] != 0)
                 {
-                    printf("%x", dest[i]);
-                    cout << ", " << amount[i] << " vezes." << endl;
+                    cout << ntohs(dest[i]) << ", " << amount[i] << " vezes." << endl;
                 }
         		break;
         	}
