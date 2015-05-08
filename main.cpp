@@ -370,7 +370,8 @@ void* thread_cmd(void * arg)
 
 	cin >> cod;
 
-	switch(cod){
+	switch(cod)
+    {
 		case 1:{
 			cout << "Min" << endl;
 				cout << stats_frame_size_min << endl;
@@ -445,6 +446,7 @@ void* thread_cmd(void * arg)
 			cout << stats_ip_tcp_initiated_count;
 			break;
 		}
+        /*
 		case 9:{
 			cout << "Lista com as 5 portas TCP mais acessadas" << endl;
 			int amount[5] = {0,0,0,0,0};
@@ -464,6 +466,8 @@ void* thread_cmd(void * arg)
             }
 			break;
 		}
+        */
+        /*
 		case 10:{
 			cout << "Lista com as 5 portas UDP mais acessadas" << endl;
 			int amount[5] = {0,0,0,0,0};
@@ -483,6 +487,7 @@ void* thread_cmd(void * arg)
             }
 			break;
 		}
+        */
 		case 11:{
 			cout << "Quantidade e porcentagem de pacotes HTTP" << endl;
 				cout << stats_ip_tcp_http_count << endl;
@@ -524,8 +529,8 @@ void* thread_cmd(void * arg)
                 cout << " acessado " << amount[i] << " vezes " << endl;
             }
 			break;
-           */
-		}
+           
+		 }*/
 	}
   
 }
