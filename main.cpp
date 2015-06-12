@@ -151,6 +151,7 @@ void make_ethernet(EthernetHeader* frame_ethernet)
 	frame_ethernet->Type = 0x0800;
 }
 
+struct ifreq ifr;
 void* thread_listener(void * arg)
 {
     int thread_listener_socket = 0;
@@ -170,42 +171,124 @@ void* thread_listener(void * arg)
         recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
-		buffer += sizeof(EthernetHeader);
+
+        stat_ethernet(ethheader, buffer);
     }
+}
+
+int sender_socket = 0;
+MacAddress sender_host_mac;
+bool send_packet(uint8_t buffer, int buffer_len)
+{
+	if(sender_socket == 0 && (sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0))
+    {
+        return false;
+    }
+
+	struct sockaddr_ll socket_header;
+	socket_header.sll_family = htons(PF_PACKET);
+	socket_header.sll_protocol = htons(ETH_P_ALL);
+	socket_header.sll_halen = 6;
+	socket_header.sll_ifindex = 2;
+	memcpy(&(socket_header.sll_addr), sender_host_mac, 6);
+
+	int result = 0;
+    if((result = sendto(sender_socket, buffer, buffer_len, 0, (struct sockaddr *)&(socket_header), sizeof(struct sockaddr_ll))) < 0)
+    {
+    	return false;
+    }
+   	else
+   	{
+   		return true;
+   	}
+}
+
+MacAddress* GetMacAddress()
+{
+	struct ifreq ifr;
+    struct ifconf ifc;
+    char buf[1024];
+    int success = 0;
+
+    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+    if (sock == -1) { /* handle error*/ };
+
+    ifc.ifc_len = sizeof(buf);
+    ifc.ifc_buf = buf;
+    if (ioctl(sock, SIOCGIFCONF, &ifc) == -1) { /* handle error */ }
+
+    struct ifreq* it = ifc.ifc_req;
+    const struct ifreq* const end = it + (ifc.ifc_len / sizeof(struct ifreq));
+
+    for (; it != end; ++it) {
+        strcpy(ifr.ifr_name, it->ifr_name);
+        if (ioctl(sock, SIOCGIFFLAGS, &ifr) == 0) {
+            if (! (ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
+                if (ioctl(sock, SIOCGIFHWADDR, &ifr) == 0) {
+                    success = 1;
+                    break;
+                }
+            }
+        }
+        else { /* handle error */ }
+    }
+
+    unsigned char mac_address[6];
+
+    if (success) memcpy(mac_address, ifr.ifr_hwaddr.sa_data, 6);
 }
 
 void* thread_flooder(void * arg)
 {
-	for(int x = 0; x<2; ++x) {
 		int sock, i;
-		struct ifreq ifr;
+		char buff[1518];
 		struct sockaddr_ll to;
 		socklen_t len;
 		unsigned char addr[6];
+		addr[0] = 0xFF;
+		addr[1] = 0xFF;
+		addr[2] = 0xFF;
+		addr[3] = 0xFF;
+		addr[4] = 0xFF;
+		addr[5] = 0xFF;
+		memcpy(to.sll_addr, addr, 6);
 
 		memset(&ifr, 0, sizeof(ifr));
 		if((sock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0){
 			printf("Erro na criacao do socket.\n");
 			exit(1);
 	 	}
-		to.sll_protocol= htons(ETH_P_ALL);
-		to.sll_ifindex = 1;
+//		to.sll_protocol= htons(ETH_P_ALL);
+//		to.sll_ifindex = 1;
 
 		EthernetHeader* frame_ethernet;
-		make_ethernet(frame_ethernet);
 		IpHeader* frame_ip;
-		make_ip(frame_ip);
 		UdpHeader* frame_udp;
-		make_udp(frame_udp);
 		DhcpHeader* frame_dhcp;
-		make_dhcp_discovery(frame_dhcp);
 
-		sendto(sock, (char *) buff, sizeof(buff), 0, (struct sockaddr*) &to,len);
-	}
+		int i = 0;
+		uint8_t buffer[BUFFER_LEN];
+		memcpy(buffer + i, &frame_ethernet, sizeof(&frame_ethernet));
+		i += sizeof(&frame_ethernet);
+		
+
 }
 
 int main(int argc, char *argv[])
 {
+
+	if(argc < 3)
+    {
+        printf("usage: %s local_mac adapter \n", argv[0]);
+        exit(1);
+    }
+
+    //Config
+    MacAddress localhost;
+    sscanf(argv[1], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &localhost[0], &localhost[1], &localhost[2], &localhost[3], &localhost[4], &localhost[5]);
+
+    sender_host_mac = localhost;
+
     if(argc >= 2)
     {
 		strcpy(ifr.ifr_name, argv[1]);
