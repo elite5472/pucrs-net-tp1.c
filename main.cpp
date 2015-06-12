@@ -151,38 +151,6 @@ void make_ethernet(EthernetHeader* frame_ethernet)
 	frame_ethernet->Type = 0x0800;
 }
 
-void stat_udp(UdpHeader* frame, EthernetHeader* frame_ethernet)
-{
-    stats_ip_udp_count++;
-
-    if(ntohs(frame->DestPort) == 0x43)
-    {
-        stats_ip_port_dhcp_count++;
-    }
-}
-
-void stat_ip(IpHeader* frame, unsigned char* buffer, EthernetHeader* frame_ethernet)
-{
-    stats_ip_count++;
-
-    if(ntohs(frame->Protocol) == 0x1100)
-        stat_udp((UdpHeader*)(buffer+20), frame_ethernet);
-}
-
-void stat_ethernet(EthernetHeader* frame, unsigned char* buffer)
-{
-    //112 (14)
-    stats_frame_count++;
-
-    if(ntohs(frame->Type) == 0x0800)
-    {
-        IpHeader* ip = (IpHeader*)(buffer + 14);
-        int size = 14 + ntohs(ip->Length);
-
-        stat_ip(ip, (buffer+14), frame);
-    }
-}
-
 void* thread_listener(void * arg)
 {
     int thread_listener_socket = 0;
@@ -202,8 +170,7 @@ void* thread_listener(void * arg)
         recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
-
-        stat_ethernet(ethheader, buffer);
+		buffer += sizeof(EthernetHeader);
     }
 }
 
