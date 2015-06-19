@@ -197,8 +197,8 @@ void* thread_listener(void * arg)
 			IpHeader* ipheader = (IpHeader*)(buffer + i);
 			
 			EthernetHeader out_ethheader;
-			memcopy(&out_ethheader.Source, &ethheader->Destination, sizeof(MacAddress));
-			memcopy(&out_ethheader.Destination, &ethheader->Source, sizeof(MacAddress));
+			memcpy(&out_ethheader.Source, &ethheader->Destination, sizeof(MacAddress));
+			memcpy(&out_ethheader.Destination, &ethheader->Source, sizeof(MacAddress));
 			out_ethheader.Type = htons(0x0800);
 			
 			IpHeader out_ipheader;
