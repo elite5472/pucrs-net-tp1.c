@@ -68,17 +68,6 @@ void print_mac(MacAddress a)
     printf("%x:%x:%x:%x:%x:%x", a[0], a[1], a[2], a[3], a[4], a[5]);
 }
 
-bool mac_equal(MacAddress a, MacAddress b)
-{
-	bool result = true;
-	result = result && a[0] == b[0];
-	result = result && a[1] == b[1];
-	result = result && a[2] == b[2];
-	result = result && a[3] == b[3];
-	result = result && a[4] == b[4];
-	result = result && a[5] == b[5];
-}
-
 void make_dhcp_discovery(DhcpHeader* frame_dhcp_discovery)
 {
 	frame_dhcp_discovery->opcode = 0x01;
