@@ -63,10 +63,9 @@ void print_ip(uint32_t ip)
     printf("%d.%d.%d.%d", bytes[3], bytes[2], bytes[1], bytes[0]);
 }
 
-void print_mac(MacAddress* mac)
+void print_mac(MacAddress a)
 {
-//    for(int i = 0; i < 6; ++i)
-//        cout << mac[i];
+    printf("%x:%x:%x:%x:%x:%x", a[0], a[1], a[2], a[3], a[4], a[5]);
 }
 
 void make_dhcp_discovery(DhcpHeader* frame_dhcp_discovery)
@@ -151,11 +150,10 @@ void make_ethernet(EthernetHeader* frame_ethernet)
 	frame_ethernet->Type = 0x0800;
 }
 
+int thread_listener_socket = 0;
 struct ifreq ifr;
 void* thread_listener(void * arg)
 {
-    int thread_listener_socket = 0;
-    struct ifreq ifr;
     //Setup monitoring to grab everything. (I don't know how this works!)
     if(ioctl(thread_listener_socket, SIOCGIFINDEX, &ifr) < 0)
         printf("Error: Monitor failed to start \n");
@@ -171,8 +169,7 @@ void* thread_listener(void * arg)
         recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
-
-//        stat_ethernet(ethheader, buffer);
+		printmac(ethheader->Destination);
     }
 }
 
@@ -203,77 +200,6 @@ bool send_packet(uint8_t* buffer, int buffer_len)
    	}
 }
 
-MacAddress* GetMacAddress()
-{
-	struct ifreq ifr;
-    struct ifconf ifc;
-    char buf[1024];
-    int success = 0;
-
-    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    if (sock == -1) { /* handle error*/ };
-
-    ifc.ifc_len = sizeof(buf);
-    ifc.ifc_buf = buf;
-    if (ioctl(sock, SIOCGIFCONF, &ifc) == -1) { /* handle error */ }
-
-    struct ifreq* it = ifc.ifc_req;
-    const struct ifreq* const end = it + (ifc.ifc_len / sizeof(struct ifreq));
-
-    for (; it != end; ++it) {
-        strcpy(ifr.ifr_name, it->ifr_name);
-        if (ioctl(sock, SIOCGIFFLAGS, &ifr) == 0) {
-            if (! (ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
-                if (ioctl(sock, SIOCGIFHWADDR, &ifr) == 0) {
-                    success = 1;
-                    break;
-                }
-            }
-        }
-        else { /* handle error */ }
-    }
-
-    unsigned char mac_address[6];
-
-    if (success) memcpy(mac_address, ifr.ifr_hwaddr.sa_data, 6);
-}
-
-void* thread_flooder(void * arg)
-{
-		int sock, i;
-		char buff[1518];
-		struct sockaddr_ll to;
-		socklen_t len;
-		unsigned char addr[6];
-		addr[0] = 0xFF;
-		addr[1] = 0xFF;
-		addr[2] = 0xFF;
-		addr[3] = 0xFF;
-		addr[4] = 0xFF;
-		addr[5] = 0xFF;
-		memcpy(to.sll_addr, addr, 6);
-
-		memset(&ifr, 0, sizeof(ifr));
-		if((sock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0){
-			printf("Erro na criacao do socket.\n");
-			exit(1);
-	 	}
-//		to.sll_protocol= htons(ETH_P_ALL);
-//		to.sll_ifindex = 1;
-
-		EthernetHeader* frame_ethernet;
-		IpHeader* frame_ip;
-		UdpHeader* frame_udp;
-		DhcpHeader* frame_dhcp;
-
-		i = 0;
-		uint8_t buffer[BUFFER_LEN];
-		memcpy(buffer + i, &frame_ethernet, sizeof(&frame_ethernet));
-		i += sizeof(&frame_ethernet);
-		send_packet(buffer, sizeof(buffer));
-
-}
-
 int main(int argc, char *argv[])
 {
 
@@ -288,24 +214,22 @@ int main(int argc, char *argv[])
 
     if(argc >= 2)
     {
-		strcpy(ifr.ifr_name, argv[1]);
+		strcpy(ifr.ifr_name, argv[2]);
     }
 	else
 	{
 		strcpy(ifr.ifr_name, "eth0");
 	}
 
-/*	if((thread_listener_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
+	if((thread_listener_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
 	{
 		printf("Error: Socket did not initialize. \n");
 		exit(1);
 	}
-*/
-	pthread_t flooder, listener;
-	pthread_create(&flooder, NULL, &thread_flooder, NULL);
+
+	pthread_t listener;
 	pthread_create(&listener, NULL, &thread_listener, NULL);
 	pthread_join(listener, NULL);
-	pthread_join(flooder, NULL);
 
 	return 0;
 }
