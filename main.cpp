@@ -68,6 +68,17 @@ void print_mac(MacAddress a)
     printf("%x:%x:%x:%x:%x:%x", a[0], a[1], a[2], a[3], a[4], a[5]);
 }
 
+bool mac_equal(MacAddress a, MacAddress b)
+{
+	bool result = true;
+	result = result && a[0] == b[0];
+	result = result && a[1] == b[1];
+	result = result && a[2] == b[2];
+	result = result && a[3] == b[3];
+	result = result && a[4] == b[4];
+	result = result && a[5] == b[5];
+}
+
 void make_dhcp_discovery(DhcpHeader* frame_dhcp_discovery)
 {
 	frame_dhcp_discovery->opcode = 0x01;
@@ -168,8 +179,33 @@ void* thread_listener(void * arg)
     {
         recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
+		i = 0;
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
+		i = i + sizeof(EthernetHeader);
+		if(mac_equals(sender_host_mac, ethheader->Destination) && ntohs(ethheader->Type) == 0x0800)
+		{
+			printf("Sending packet\n");
+			IpHeader* ipheader = (IpHeader*)(buffer + i);
+			
+			EthernetHeader out_ethheader;
+			out_ethheader.Source = ethheader->Destination;
+			out_ethheader.Destination = ethheader->Source;
+			out_ethheader.Type = htons(0x0800);
+			
+			IpHeader out_ipheader;
+			make_ip(&out_ipheader);
+			
+			uint8_t buffer[BUFFER_LEN];
+			i = 0;
+			
+			memcpy((buffer + i), out_ethheader, sizeof(EthernetHeader); i += sizeof(EthernetHeader);
+			memcpy((buffer + i), out_ipheader, sizeof(IpHeader); i += sizeof(IpHeader);
+			
+			send_packet(buffer, i);
+		} 
 		print_mac(ethheader->Destination);
+		printf("\n");
+		
     }
 }
 
@@ -205,7 +241,7 @@ int main(int argc, char *argv[])
 
 	if(argc < 3)
     {
-        printf("usage: %s local_mac adapter \n", argv[0]);
+        printf("usage: %s local_mac adapter ip \n", argv[0]);
         exit(1);
     }
 
