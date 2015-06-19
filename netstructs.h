@@ -1,3 +1,5 @@
+#ifndef NETSTRUCTS
+
 #include <iostream>
 #include <unordered_map>
 #include <string>
@@ -23,6 +25,9 @@
 #include <netinet/in_systm.h>
 
 #include "netstructs.cpp"
+
+#define NETSTRUCTS
+#endif
 
 typedef uint8_t MacAddress[6];
 

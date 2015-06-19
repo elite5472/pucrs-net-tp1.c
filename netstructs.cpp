@@ -1,4 +1,5 @@
 //Compile with g++ -pthread -std=c++11 main.c
+#include "netstructs.h"
 
 bool mac_equal(MacAddress a, MacAddress b)
 {
