@@ -25,11 +25,6 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 
-extern bool mac_equal(MacAddress a, MacAddress b);
-extern void print_ip(uint32_t ip);
-extern void print_mac(MacAddress a);
-extern bool send_packet(uint8_t* buffer, int buffer_len, int sender_socket, MacAddress host_mac);
-
 typedef uint8_t MacAddress[6];
 
 typedef struct
@@ -122,5 +117,10 @@ typedef struct
         char file[128];
         uint8_t options[512];
 } __attribute__((packed)) DhcpHeader;
+
+extern bool mac_equal(MacAddress a, MacAddress b);
+extern void print_ip(uint32_t ip);
+extern void print_mac(MacAddress a);
+extern bool send_packet(uint8_t* buffer, int buffer_len, int sender_socket, MacAddress host_mac);
 
 #endif
