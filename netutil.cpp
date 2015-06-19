@@ -50,7 +50,7 @@ void print_mac(MacAddress a)
     printf("%x:%x:%x:%x:%x:%x", a[0], a[1], a[2], a[3], a[4], a[5]);
 }
 
-bool send_packet(uint8_t* buffer, int buffer_len, int sender_socket)
+bool send_packet(uint8_t* buffer, int buffer_len, int sender_socket, MacAddress host_mac)
 {
 	if(sender_socket == 0 && (sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
     {
