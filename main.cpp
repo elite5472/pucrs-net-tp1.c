@@ -35,13 +35,7 @@ using namespace std;
 
 extern int errno;
 
-int stats_frame_count = 0;
-
-int stats_ip_count = 0;
-
-int stats_ip_udp_count = 0;
-
-int stats_ip_port_dhcp_count = 0;
+MacAddress host_mac;
 
 bool mac_equal(MacAddress a, MacAddress b)
 {
@@ -168,10 +162,10 @@ void* thread_listener(void * arg)
     {
         recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
-		i = 0;
+		int i = 0;
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
 		i = i + sizeof(EthernetHeader);
-		if(mac_equals(sender_host_mac, ethheader->Destination) && ntohs(ethheader->Type) == 0x0800)
+		if(mac_equal(host_mac, ethheader->Destination) && ntohs(ethheader->Type) == 0x0800)
 		{
 			printf("Sending packet\n");
 			IpHeader* ipheader = (IpHeader*)(buffer + i);
@@ -199,7 +193,6 @@ void* thread_listener(void * arg)
 }
 
 int sender_socket = 0;
-MacAddress sender_host_mac;
 bool send_packet(uint8_t* buffer, int buffer_len)
 {
 	if(sender_socket == 0 && (sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
@@ -212,7 +205,7 @@ bool send_packet(uint8_t* buffer, int buffer_len)
 	socket_header.sll_protocol = htons(ETH_P_ALL);
 	socket_header.sll_halen = 6;
 	socket_header.sll_ifindex = 2;
-	memcpy(&(socket_header.sll_addr), sender_host_mac, 6);
+	memcpy(&(socket_header.sll_addr), host_mac, 6);
 
 	int result = 0;
     if((result = sendto(sender_socket, buffer, buffer_len, 0, (struct sockaddr *)&(socket_header), sizeof(struct sockaddr_ll))) < 0)
@@ -235,7 +228,7 @@ int main(int argc, char *argv[])
     }
 
     //Config
-    sscanf(argv[1], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &sender_host_mac[0], &sender_host_mac[1], &sender_host_mac[2], &sender_host_mac[3], &sender_host_mac[4], &sender_host_mac[5]);
+    sscanf(argv[1], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &host_mac[0], &host_mac[1], &host_mac[2], &host_mac[3], &host_mac[4], &host_mac[5]);
 
     if(argc >= 2)
     {
