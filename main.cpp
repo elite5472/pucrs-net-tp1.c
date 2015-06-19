@@ -207,8 +207,8 @@ void* thread_listener(void * arg)
 			uint8_t buffer[BUFFER_LEN];
 			i = 0;
 			
-			memcpy((buffer + i), out_ethheader, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
-			memcpy((buffer + i), out_ipheader, sizeof(IpHeader)); i += sizeof(IpHeader);
+			memcpy((buffer + i), &out_ethheader, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
+			memcpy((buffer + i), &out_ipheader, sizeof(IpHeader)); i += sizeof(IpHeader);
 			
 			send_packet(buffer, i);
 		} 
