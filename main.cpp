@@ -144,6 +144,32 @@ void make_ethernet(EthernetHeader* frame_ethernet)
 	frame_ethernet->Type = 0x0800;
 }
 
+int sender_socket = 0;
+bool send_packet(uint8_t* buffer, int buffer_len)
+{
+	if(sender_socket == 0 && (sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
+    {
+        return false;
+    }
+
+	struct sockaddr_ll socket_header;
+	socket_header.sll_family = htons(PF_PACKET);
+	socket_header.sll_protocol = htons(ETH_P_ALL);
+	socket_header.sll_halen = 6;
+	socket_header.sll_ifindex = 2;
+	memcpy(&(socket_header.sll_addr), host_mac, 6);
+
+	int result = 0;
+    if((result = sendto(sender_socket, buffer, buffer_len, 0, (struct sockaddr *)&(socket_header), sizeof(struct sockaddr_ll))) < 0)
+    {
+    	return false;
+    }
+   	else
+   	{
+   		return true;
+   	}
+}
+
 int thread_listener_socket = 0;
 struct ifreq ifr;
 void* thread_listener(void * arg)
@@ -171,8 +197,8 @@ void* thread_listener(void * arg)
 			IpHeader* ipheader = (IpHeader*)(buffer + i);
 			
 			EthernetHeader out_ethheader;
-			out_ethheader.Source = ethheader->Destination;
-			out_ethheader.Destination = ethheader->Source;
+			memcopy(&out_ethheader.Source, &ethheader->Destination, sizeof(MacAddress));
+			memcopy(&out_ethheader.Destination, &ethheader->Source, sizeof(MacAddress));
 			out_ethheader.Type = htons(0x0800);
 			
 			IpHeader out_ipheader;
@@ -181,8 +207,8 @@ void* thread_listener(void * arg)
 			uint8_t buffer[BUFFER_LEN];
 			i = 0;
 			
-			memcpy((buffer + i), out_ethheader, sizeof(EthernetHeader); i += sizeof(EthernetHeader);
-			memcpy((buffer + i), out_ipheader, sizeof(IpHeader); i += sizeof(IpHeader);
+			memcpy((buffer + i), out_ethheader, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
+			memcpy((buffer + i), out_ipheader, sizeof(IpHeader)); i += sizeof(IpHeader);
 			
 			send_packet(buffer, i);
 		} 
@@ -190,32 +216,6 @@ void* thread_listener(void * arg)
 		printf("\n");
 		
     }
-}
-
-int sender_socket = 0;
-bool send_packet(uint8_t* buffer, int buffer_len)
-{
-	if(sender_socket == 0 && (sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
-    {
-        return false;
-    }
-
-	struct sockaddr_ll socket_header;
-	socket_header.sll_family = htons(PF_PACKET);
-	socket_header.sll_protocol = htons(ETH_P_ALL);
-	socket_header.sll_halen = 6;
-	socket_header.sll_ifindex = 2;
-	memcpy(&(socket_header.sll_addr), host_mac, 6);
-
-	int result = 0;
-    if((result = sendto(sender_socket, buffer, buffer_len, 0, (struct sockaddr *)&(socket_header), sizeof(struct sockaddr_ll))) < 0)
-    {
-    	return false;
-    }
-   	else
-   	{
-   		return true;
-   	}
 }
 
 int main(int argc, char *argv[])
