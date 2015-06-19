@@ -52,7 +52,7 @@ void print_mac(MacAddress a)
 
 bool send_packet(uint8_t* buffer, int buffer_len, int socket)
 {
-	if(sender_socket == 0 && (sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
+	if(socket == 0 && (socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
     {
         return false;
     }
@@ -65,7 +65,7 @@ bool send_packet(uint8_t* buffer, int buffer_len, int socket)
 	memcpy(&(socket_header.sll_addr), host_mac, 6);
 
 	int result = 0;
-    if((result = sendto(sender_socket, buffer, buffer_len, 0, (struct sockaddr *)&(socket_header), sizeof(struct sockaddr_ll))) < 0)
+    if((result = sendto(socket, buffer, buffer_len, 0, (struct sockaddr *)&(socket_header), sizeof(struct sockaddr_ll))) < 0)
     {
     	return false;
     }
