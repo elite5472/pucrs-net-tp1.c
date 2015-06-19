@@ -23,7 +23,7 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 
-#include "netstruct.h"
+#include "netstructs.h"
 
 #define BUFFER_LEN 1518
 
