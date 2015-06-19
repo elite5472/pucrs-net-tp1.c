@@ -169,7 +169,7 @@ void* thread_listener(void * arg)
         recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
-		printmac(ethheader->Destination);
+		print_mac(ethheader->Destination);
     }
 }
 
