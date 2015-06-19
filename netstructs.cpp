@@ -1,29 +1,4 @@
 //Compile with g++ -pthread -std=c++11 main.c
-#include <iostream>
-#include <unordered_map>
-#include <string>
-#include <cstdio>
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <linux/if_ether.h>
-#include <netpacket/packet.h>
-#include <net/ethernet.h>
-#include <netinet/ether.h>
-#include <arpa/inet.h>
-#include <time.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <net/if.h>
-#include <netinet/ether.h>
-#include <netinet/in.h>
-#include <netinet/in_systm.h>
-
-#include "netstructs.h"
 
 bool mac_equal(MacAddress a, MacAddress b)
 {
