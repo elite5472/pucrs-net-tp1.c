@@ -172,15 +172,15 @@ void* thread_listener(void * arg)
 
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
 
-        stat_ethernet(ethheader, buffer);
+//        stat_ethernet(ethheader, buffer);
     }
 }
 
 int sender_socket = 0;
 MacAddress sender_host_mac;
-bool send_packet(uint8_t buffer, int buffer_len)
+bool send_packet(uint8_t* buffer, int buffer_len)
 {
-	if(sender_socket == 0 && (sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0))
+	if(sender_socket == 0 && (sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
     {
         return false;
     }
@@ -266,11 +266,11 @@ void* thread_flooder(void * arg)
 		UdpHeader* frame_udp;
 		DhcpHeader* frame_dhcp;
 
-		int i = 0;
+		i = 0;
 		uint8_t buffer[BUFFER_LEN];
 		memcpy(buffer + i, &frame_ethernet, sizeof(&frame_ethernet));
 		i += sizeof(&frame_ethernet);
-		
+		send_packet(buffer, sizeof(buffer));
 
 }
 
@@ -284,10 +284,7 @@ int main(int argc, char *argv[])
     }
 
     //Config
-    MacAddress localhost;
-    sscanf(argv[1], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &localhost[0], &localhost[1], &localhost[2], &localhost[3], &localhost[4], &localhost[5]);
-
-    sender_host_mac = localhost;
+    sscanf(argv[1], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &sender_host_mac[0], &sender_host_mac[1], &sender_host_mac[2], &sender_host_mac[3], &sender_host_mac[4], &sender_host_mac[5]);
 
     if(argc >= 2)
     {
