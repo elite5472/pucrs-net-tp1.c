@@ -100,6 +100,63 @@ int make_dhcp(DhcpHeader* frame_dhcp, uint32_t source_ip, uint16_t source_port, 
 	frame_udp->Length = 0x0134;
 	frame_udp->Checksum = 0x00;	
 
+	frame_dhcp->opcode = 0x02;
+	frame_dhcp->htype = 0x01;
+	frame_dhcp->hlen = 0x06;
+	frame_dhcp->hops = 0x00;
+	frame_dhcp->id = 0xc7d44645;
+	frame_dhcp->secs = 0x0000;
+	frame_dhcp->flags = 0x0000;
+	frame_dhcp->ciaddr = 0x16208FC0;
+	frame_dhcp->yiaddr = 0xC0A80164;
+	frame_dhcp->siaddr = 0x00000000;
+	frame_dhcp->giaddr = 0x00000000;
+
+	frame_dhcp->magic[0] == 0x63;
+	frame_dhcp->magic[1] == 0x82;
+	frame_dhcp->magic[2] == 0x53;
+	frame_dhcp->magic[3] == 0x63;
+
+	frame_dhcp->options[0] == 53;
+	frame_dhcp->options[1] == 1;
+	frame_dhcp->options[2] == 2;
+	frame_dhcp->options[3] == 1;
+	frame_dhcp->options[4] == 4;
+	frame_dhcp->options[5] == 255;
+	frame_dhcp->options[6] == 255;
+	frame_dhcp->options[7] == 255;
+	frame_dhcp->options[8] == 0;
+	frame_dhcp->options[9] == 3;
+	frame_dhcp->options[10] == 4;
+	frame_dhcp->options[11] == 10;
+	frame_dhcp->options[12] == 32;
+	frame_dhcp->options[13] == 143;
+	frame_dhcp->options[14] == 1;
+	frame_dhcp->options[15] == 54;
+	frame_dhcp->options[16] == 4;
+	frame_dhcp->options[17] == 10;
+	frame_dhcp->options[18] == 32;
+	frame_dhcp->options[19] == 143;
+	frame_dhcp->options[20] == 193;
+
+	frame_dhcp->options[21] == 6;
+	frame_dhcp->options[22] == 4;
+	frame_dhcp->options[23] == 192;
+	frame_dhcp->options[24] == 168;
+	frame_dhcp->options[25] == 25;
+	frame_dhcp->options[26] == 203;
+
+	frame_dhcp->options[27] == 51;
+	frame_dhcp->options[28] == 4;
+	frame_dhcp->options[29] == 10;
+	frame_dhcp->options[30] == 10;
+	frame_dhcp->options[31] == 10;
+	frame_dhcp->options[32] == 10;
+
+	frame_dhcp->options[33] == 255;
+	frame_dhcp->options[34] == 255;
+	//uint8_t options[251];
+
 	int i = 0;
 	memcpy(buffer + i, frame_ethernet, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
 	memcpy(buffer + i, frame_ip, sizeof(IpHeader)); i += sizeof(IpHeader);
@@ -132,8 +189,7 @@ void* thread_listener(void * arg)
 	    IpHeader* ipHeader = (IpHeader*)(buffer + i);
 		i = i + sizeof(IpHeader);
 		UdpHeader* udpHeader = (UdpHeader*)(buffer + i);
-		i = i + sizeof(UdpHeader);
-		//if(mac_equal(host_mac, ethheader->Destination) && ntohs(ethheader->Type) == 0x0800)		
+		i = i + sizeof(UdpHeader);		
 		if(ntohs(udpHeader->SourcePort) == 0x44)
 		{			
 			DhcpHeader* frame_dhcp = (DhcpHeader*) malloc(sizeof(DhcpHeader));
@@ -141,7 +197,8 @@ void* thread_listener(void * arg)
 			cout << "MAC" << endl;			
 			print_mac(dhcpHeader->chaddr);
 			cout << endl;
-			int buffer_len = make_dhcp(frame_dhcp, ipHeader->Source, 0x44, ethheader->Source, ipHeader->Destination, 0x43, ethheader->Destination, buffer);						
+			int buffer_len = make_dhcp(frame_dhcp, ipHeader->Source, 0x44, ethheader->Source, ipHeader->Destination, 0x43, ethheader->Destination, buffer);		
+				
 			send_packet(buffer, buffer_len, thread_listener_socket, ethheader->Source);
 
 		}
