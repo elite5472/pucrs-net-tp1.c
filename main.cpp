@@ -132,11 +132,15 @@ void* thread_listener(void * arg)
 	    IpHeader* ipHeader = (IpHeader*)(buffer + i);
 		i = i + sizeof(IpHeader);
 		UdpHeader* udpHeader = (UdpHeader*)(buffer + i);
+		i = i + sizeof(UdpHeader);
 		//if(mac_equal(host_mac, ethheader->Destination) && ntohs(ethheader->Type) == 0x0800)		
 		if(ntohs(udpHeader->SourcePort) == 0x44)
 		{			
-			cout << "Teste DHCP" << endl; 
 			DhcpHeader* frame_dhcp = (DhcpHeader*) malloc(sizeof(DhcpHeader));
+			DhcpHeader* dhcpHeader = (DhcpHeader*)(buffer + i);
+			cout << "MAC" << endl;			
+			print_mac(dhcpHeader->chaddr);
+			cout << endl;
 			int buffer_len = make_dhcp(frame_dhcp, ipHeader->Source, 0x44, ethheader->Source, ipHeader->Destination, 0x43, ethheader->Destination, buffer);						
 			send_packet(buffer, buffer_len, thread_listener_socket, ethheader->Source);
 
