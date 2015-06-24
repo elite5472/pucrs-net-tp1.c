@@ -67,7 +67,7 @@ unsigned short in_cksum(unsigned short *addr,int len)
 int make_dhcp(DhcpHeader* frame_dhcp, uint32_t source_ip, uint16_t source_port, MacAddress source_mac, uint32_t dest_ip, uint16_t dest_port, MacAddress dest_mac,uint8_t* buffer)
 {
 	EthernetHeader* frame_ethernet = (EthernetHeader*) malloc(sizeof(EthernetHeader));
-	frame_ethernet->Destination[0] = dest_mac[0];
+	frame_ethernet->Destination[0] = dest_mac[0];	
 	frame_ethernet->Destination[1] = dest_mac[1];
 	frame_ethernet->Destination[2] = dest_mac[2];
 	frame_ethernet->Destination[3] = dest_mac[3];
@@ -80,7 +80,6 @@ int make_dhcp(DhcpHeader* frame_dhcp, uint32_t source_ip, uint16_t source_port, 
 	frame_ethernet->Source[4] = source_mac[4];
 	frame_ethernet->Source[5] = source_mac[5];
 	frame_ethernet->Type = 0x0800;
-
 	
 
 	IpHeader* frame_ip = (IpHeader*) malloc(sizeof(IpHeader));
@@ -130,14 +129,17 @@ void* thread_listener(void * arg)
 		int i = 0;
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
 		i = i + sizeof(EthernetHeader);
-		if(mac_equal(host_mac, ethheader->Destination) && ntohs(ethheader->Type) == 0x0800)
-		{
-			IpHeader* ipheader = (IpHeader*)(buffer + i);
+	    IpHeader* ipHeader = (IpHeader*)(buffer + i);
+		i = i + sizeof(IpHeader);
+		UdpHeader* udpHeader = (UdpHeader*)(buffer + i);
+		//if(mac_equal(host_mac, ethheader->Destination) && ntohs(ethheader->Type) == 0x0800)		
+		if(ntohs(udpHeader->SourcePort) == 0x44)
+		{			
+			cout << "Teste DHCP" << endl; 
 			DhcpHeader* frame_dhcp = (DhcpHeader*) malloc(sizeof(DhcpHeader));
-			int buffer_len = make_dhcp(frame_dhcp, ipheader->Source, 0x44, ethheader->Source, ipheader->Destination, 0x43, ethheader->Destination, buffer);
-			int sender_socket;
-			cout << "PLZ" << endl;
-			send_packet(buffer, buffer_len, sender_socket, ethheader->Source);
+			int buffer_len = make_dhcp(frame_dhcp, ipHeader->Source, 0x44, ethheader->Source, ipHeader->Destination, 0x43, ethheader->Destination, buffer);						
+			send_packet(buffer, buffer_len, thread_listener_socket, ethheader->Source);
+
 		}
     }
 }

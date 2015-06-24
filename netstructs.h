@@ -150,7 +150,6 @@ bool send_packet(uint8_t* buffer, int buffer_len, int sender_socket, MacAddress 
 {
 	if(sender_socket == 0 && (sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
     {
-
         return false;
     }
 
@@ -160,7 +159,6 @@ bool send_packet(uint8_t* buffer, int buffer_len, int sender_socket, MacAddress 
 	socket_header.sll_halen = 6;
 	socket_header.sll_ifindex = 2;
 	memcpy(&(socket_header.sll_addr), host_mac, 6);
-	print_mac(host_mac);
 	int result = 0;
     if((result = sendto(sender_socket, buffer, buffer_len, 0, (struct sockaddr *)&(socket_header), sizeof(struct sockaddr_ll))) < 0)
     {
@@ -168,6 +166,7 @@ bool send_packet(uint8_t* buffer, int buffer_len, int sender_socket, MacAddress 
     }
    	else
    	{	
+		//print_mac(host_mac);
    		return true;
    	}
 }
