@@ -33,32 +33,6 @@ extern int errno;
 
 MacAddress host_mac;
 
-int thread_listener_socket = 0;
-struct ifreq ifr;
-void* thread_listener(void * arg)
-{
-    //Setup monitoring to grab everything. (I don't know how this works!)
-    if(ioctl(thread_listener_socket, SIOCGIFINDEX, &ifr) < 0)
-        printf("Error: Monitor failed to start \n");
-    ioctl(thread_listener_socket, SIOCGIFFLAGS, &ifr);
-    ifr.ifr_flags |= IFF_PROMISC;
-    ioctl(thread_listener_socket, SIOCSIFFLAGS, &ifr);
-
-
-    unsigned char buffer[BUFFER_LEN];
-    while (true)
-    {
-        recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
-
-		int i = 0;
-		EthernetHeader* ethheader = (EthernetHeader*)buffer;
-		i = i + sizeof(EthernetHeader);
-		if(mac_equal(host_mac, ethheader->Destination) && ntohs(ethheader->Type) == 0x0800)
-		{
-			
-		}
-    }
-}
 
 unsigned short in_cksum(unsigned short *addr,int len)
 {
@@ -92,7 +66,7 @@ unsigned short in_cksum(unsigned short *addr,int len)
 
 int make_dhcp(DhcpHeader* frame_dhcp, uint32_t source_ip, uint16_t source_port, MacAddress source_mac, uint32_t dest_ip, uint16_t dest_port, MacAddress dest_mac,uint8_t* buffer)
 {
-	EthernetHeader* frame_ethernet;
+	EthernetHeader* frame_ethernet = (EthernetHeader*) malloc(sizeof(EthernetHeader));
 	frame_ethernet->Destination[0] = dest_mac[0];
 	frame_ethernet->Destination[1] = dest_mac[1];
 	frame_ethernet->Destination[2] = dest_mac[2];
@@ -106,8 +80,10 @@ int make_dhcp(DhcpHeader* frame_dhcp, uint32_t source_ip, uint16_t source_port, 
 	frame_ethernet->Source[4] = source_mac[4];
 	frame_ethernet->Source[5] = source_mac[5];
 	frame_ethernet->Type = 0x0800;
+
 	
-	IpHeader* frame_ip;
+
+	IpHeader* frame_ip = (IpHeader*) malloc(sizeof(IpHeader));
 	frame_ip->VersionIhl = 0x4;
 	frame_ip->DscpEcn = 0x00;
 	frame_ip->Length = 0x14;
@@ -117,9 +93,9 @@ int make_dhcp(DhcpHeader* frame_dhcp, uint32_t source_ip, uint16_t source_port, 
 	frame_ip->Protocol = 0x11;
 	frame_ip->Source = source_ip;
 	frame_ip->Destination = dest_ip;
-	frame_ip->Checksum = in_cksum((uint16_t*)(frame_ip), sizeof(frame_ip));
+	frame_ip->Checksum = in_cksum((uint16_t*)(frame_ip), sizeof(frame_ip));	
 
-	UdpHeader* frame_udp;
+	UdpHeader* frame_udp = (UdpHeader*) malloc(sizeof(UdpHeader)); 
 	frame_udp->SourcePort = source_port;
 	frame_udp->DestPort = dest_port;
 	frame_udp->Length = 0x0134;
@@ -130,9 +106,40 @@ int make_dhcp(DhcpHeader* frame_dhcp, uint32_t source_ip, uint16_t source_port, 
 	memcpy(buffer + i, frame_ip, sizeof(IpHeader)); i += sizeof(IpHeader);
 	memcpy(buffer + i, frame_udp, sizeof(UdpHeader)); i += sizeof(UdpHeader);
 	memcpy(buffer + i, frame_dhcp, sizeof(DhcpHeader)); i += sizeof(DhcpHeader);
-
 	return i;
 
+}
+
+int thread_listener_socket = 0;
+struct ifreq ifr;
+void* thread_listener(void * arg)
+{
+    //Setup monitoring to grab everything. (I don't know how this works!)
+    if(ioctl(thread_listener_socket, SIOCGIFINDEX, &ifr) < 0)
+        printf("Error: Monitor failed to start \n");
+    ioctl(thread_listener_socket, SIOCGIFFLAGS, &ifr);
+    ifr.ifr_flags |= IFF_PROMISC;
+    ioctl(thread_listener_socket, SIOCSIFFLAGS, &ifr);
+
+
+    unsigned char buffer[BUFFER_LEN];
+    while (true)
+    {
+        recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
+
+		int i = 0;
+		EthernetHeader* ethheader = (EthernetHeader*)buffer;
+		i = i + sizeof(EthernetHeader);
+		if(mac_equal(host_mac, ethheader->Destination) && ntohs(ethheader->Type) == 0x0800)
+		{
+			IpHeader* ipheader = (IpHeader*)(buffer + i);
+			DhcpHeader* frame_dhcp = (DhcpHeader*) malloc(sizeof(DhcpHeader));
+			int buffer_len = make_dhcp(frame_dhcp, ipheader->Source, 0x44, ethheader->Source, ipheader->Destination, 0x43, ethheader->Destination, buffer);
+			int sender_socket;
+			cout << "PLZ" << endl;
+			send_packet(buffer, buffer_len, sender_socket, ethheader->Source);
+		}
+    }
 }
 
 int main(int argc, char *argv[])
