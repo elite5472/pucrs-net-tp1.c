@@ -113,7 +113,7 @@ typedef struct
 	uint32_t Siaddr;
 	uint32_t Giaddr;
 	MacAddress Chaddr;
-	uint8_t Padding;
+	uint8_t Padding[10];
 	uint8_t Sname[64];
 	uint8_t File[128];
 	uint32_t Magic;
