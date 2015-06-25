@@ -119,8 +119,7 @@ int make_udp(MacAddress source_mac, uint32_t source_ip, uint16_t source_port, Ma
 		memcpy(output + i, data, data_len); i += data_len;
 	}
 
-	int i = make_ip(source_mac, source_ip, dest_mac, dest_ip, 0x11, output, i, buffer, buffer_offset);
-	
+	i = make_ip(source_mac, source_ip, dest_mac, dest_ip, 0x11, output, i, buffer, buffer_offset);
 	return i;
 }
 
