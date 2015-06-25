@@ -145,7 +145,7 @@ void* thread_listener(void * arg)
 		UdpHeader* udp = (UdpHeader*)(buffer + i);
 		i = i + sizeof(UdpHeader);
 		
-		if(ntohs(eth->Type) == 0x0800 && ip->Protocol == 0x11 && ntohs(udp->SourcePort) == 67)
+		if(ntohs(eth->Type) == 0x0800 && ip->Protocol == 0x11 && ntohs(udp->SourcePort) == 68)
 		{			
 			print_ip(ip->Source);
 			printf(": DHCP Discovery/Request\n");
