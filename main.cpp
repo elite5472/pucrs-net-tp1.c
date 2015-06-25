@@ -168,6 +168,12 @@ void* thread_listener(void * arg)
 			int j = sizeof(DhcpHeader);
 			bool cont = false;
 			
+			for(int x = 0; x < j; x++)
+			{
+				printf("%hhx ", options[x]);
+			}
+			printf("\n");
+			
 			if(false && buffer[i + 2] == 1) //DHCP Discover
 			{
 				//Message Type
