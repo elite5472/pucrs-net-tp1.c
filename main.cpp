@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
 
 	struct in_addr addr_buffer;
 	inet_aton(argv[1], &addr_buffer);
-    unsigned int sender_ip = addr_buffer.s_addr;
+    sender_ip = addr_buffer.s_addr;
 	strcpy(ifr.ifr_name, argv[3]);
 
 	if((listener_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
