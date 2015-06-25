@@ -193,7 +193,28 @@ int make_ip(MacAddress source_mac, uint32_t source_ip, MacAddress dest_mac, uint
 	int i = buffer_offset;
 	memcpy(buffer + i, &eth, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
 	memcpy(buffer + i, &ip, sizeof(IpHeader)); i += sizeof(IpHeader);
-	memcpy(buffer + i, data, data_len); i += data_len;
+	if(data_len > 0)
+	{
+		memcpy(buffer + i, data, data_len); i += data_len;
+	}
+	
+	return i;
+}
+
+int make_udp(MacAddress source_mac, uint32_t source_ip, uint16_t source_port, MacAddress dest_mac, uint32_t dest_ip, uint16_t dest_port, uint8_t* data, int data_len, uint8_t* buffer, int buffer_offset)
+{
+	UdpHeader udp;
+	udp.SourcePort = source_port;
+	udp.DestPort = dest_port;
+	udp.Length = htons(8 + data_len);
+	udp.Checksum = 0;
+	
+	int i = make_ip(source_mak, source_ip, dest_mac, dest_ip, 0x11, (uint8_t*)(&udp), 8 + data_len, buffer, buffer_offset);
+	memcpy(buffer + i, &udp, 8); i += 8;
+	if(data_len > 0)
+	{
+		memcpy(buffer + i, data, data_len); i += data_len;
+	}
 	
 	return i;
 }
@@ -229,13 +250,10 @@ void* thread_listener(void * arg)
 			uint8_t out_buffer[BUFFER_LEN];
 			int i = 0;
 			
-			UdpHeader udp;
-			udp.SourcePort = htons(67);
-			udp.DestPort = htons(68);
-			udp.Length = htons(8);
-			udp.Checksum = 0;
-			
-			i =  make_ip(host_mac, sender_ip, ethheader->Source, ipheader->Source, 0x11, (uint8_t*)(&udp), 8, out_buffer, i);
+			i =  make_udp(
+				host_mac, sender_ip, htons(67),
+				ethheader->Source, ipheader->Source, htons(68),
+				NULL, 0, out_buffer, i);
 			
 			send_packet(out_buffer, i, sender_socket, host_mac);
 		}
