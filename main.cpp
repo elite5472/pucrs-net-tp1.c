@@ -210,7 +210,7 @@ void* thread_listener(void * arg)
 			out_ipheader.FlagsOffset = 0x00;
 			out_ipheader.Ttl = 64;
 			out_ipheader.Protocol = 0xFD;
-			out_ipheader.Source = sender_ip;
+			out_ipheader.Source = ntoh(sender_ip);
 			out_ipheader.Destination = ipheader->Source;
 			out_ipheader.Checksum = in_cksum((uint16_t*)(&out_ipheader), sizeof(IpHeader));
 			
