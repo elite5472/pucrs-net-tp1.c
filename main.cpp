@@ -170,6 +170,34 @@ int make_dhcp(DhcpHeader* frame_dhcp, uint32_t source_ip, uint16_t source_port, 
 
 }
 
+int make_ip(MacAddress source_mac, uint32_t source_ip, MacAddress dest_mac, uint32_t dest_ip, uint8_t protocol, uint8_t* data, int data_len, uint8_t* buffer, int buffer_offset)
+{
+	EthernetHeader eth;
+	memcpy(eth.Source, source_mac, sizeof(MacAddress));
+	memcpy(eth.Destination, dest_mac, sizeof(MacAddress));
+	eth.Type = htons(0x0800);
+	
+	IpHeader ip;
+	ip.VersionIhl = 0x45;
+	ip.DscpEcn = 0x00;
+	ip.Length = htons(20 + data_len);
+	ip.Id = 0x00;
+	ip.FlagsOffset = 0x00;
+	ip.Ttl = 64;
+	ip.Protocol = 0xFD;
+	ip.Source = sender_ip;
+	ip.Destination = ipheader->Source;
+	ip.Checksum = 0;
+	ip.Checksum = in_cksum((uint16_t*)(&out_ipheader), sizeof(IpHeader));
+	
+	int i = buffer_offset;
+	memcpy(buffer + i, &eth, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
+	memcpy(buffer + i, &ip, sizeof(IpHeader)); i += sizeof(IpHeader);
+	memcpy(budder + i, &data, data_len); i += data_len;
+	
+	return i;
+}
+
 struct ifreq ifr;
 void* thread_listener(void * arg)
 {
@@ -197,29 +225,17 @@ void* thread_listener(void * arg)
 		{
 			print_ip(ipheader->Source);
 			printf(", sending back.\n");
-			EthernetHeader out_ethheader;
-			memcpy(out_ethheader.Source, ethheader->Destination, sizeof(MacAddress));
-			memcpy(out_ethheader.Destination, ethheader->Source, sizeof(MacAddress));
-			out_ethheader.Type = htons(0x0800);
-			
-			IpHeader out_ipheader;
-			out_ipheader.VersionIhl = 0x45;
-			out_ipheader.DscpEcn = 0x00;
-			out_ipheader.Length = htons(20);
-			out_ipheader.Id = 0x00;
-			out_ipheader.FlagsOffset = 0x00;
-			out_ipheader.Ttl = 64;
-			out_ipheader.Protocol = 0xFD;
-			out_ipheader.Source = sender_ip;
-			out_ipheader.Destination = ipheader->Source;
-			out_ipheader.Checksum = 0;
-			out_ipheader.Checksum = in_cksum((uint16_t*)(&out_ipheader), sizeof(IpHeader));
 			
 			uint8_t out_buffer[BUFFER_LEN];
 			int i = 0;
 			
-			memcpy(out_buffer + i, &out_ethheader, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
-			memcpy(out_buffer + i, &out_ipheader, sizeof(IpHeader)); i += sizeof(IpHeader);
+			UdpHeader udp;
+			udp.SourcePort = htons(67);
+			udp.DestPort = htons(68);
+			udp.Length = htons(8);
+			udp.Checksum = 0;
+			
+			i =  make_ip(host_mac, sender_ip, ethheader->Source, ipheader->Source, 0x11, (uint8_t*)(&udp), 8, out_buffer, i);
 			
 			send_packet(out_buffer, i, sender_socket, host_mac);
 		}
