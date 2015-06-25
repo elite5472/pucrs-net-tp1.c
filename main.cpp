@@ -243,6 +243,13 @@ void* thread_listener(void * arg)
 				options[j+1] = 4;
 				memcpy(options + (j + 2), &gateway_ip, 4);
 				j += 6;
+				
+				//End+Padding
+				aux = 0;
+				options[j+0] = 0xFF;
+				j++;
+				memcpy(options + (j + 1), &aux, 4); j += 4;
+				memcpy(options + (j + 1), &aux, 4); j += 4;
 			}
 			
 			MacAddress broadcast;
