@@ -152,7 +152,7 @@ void* thread_listener(void * arg)
 			
 			DhcpHeader* i_dhcp = (DhcpHeader*)(buffer+i); i += sizeof(DhcpHeader);
 			
-			DhpcHeader o_dhcp;
+			DhcpHeader o_dhcp;
 			o_dhcp.Op = 2;
 			o_dhcp.HType = 1;
 			o_dhcp.HLength = 6;
