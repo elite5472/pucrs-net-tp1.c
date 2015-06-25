@@ -209,7 +209,7 @@ int make_udp(MacAddress source_mac, uint32_t source_ip, uint16_t source_port, Ma
 	udp.Length = htons(8 + data_len);
 	udp.Checksum = 0;
 	
-	int i = make_ip(source_mak, source_ip, dest_mac, dest_ip, 0x11, (uint8_t*)(&udp), 8 + data_len, buffer, buffer_offset);
+	int i = make_ip(source_mac, source_ip, dest_mac, dest_ip, 0x11, (uint8_t*)(&udp), 8 + data_len, buffer, buffer_offset);
 	memcpy(buffer + i, &udp, 8); i += 8;
 	if(data_len > 0)
 	{
