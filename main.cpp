@@ -242,6 +242,9 @@ void* thread_listener(void * arg)
 			
 			uint8_t out_buffer[BUFFER_LEN];
 			i = make_udp(host_mac, sender_ip, 67, broadcast, 0xFFFFFFFF, 68, options, j, out_buffer, 0);
+			printf("PacketSize: %d bytes\n", i);
+			
+			send_packet(out_buffer, i, sender_socket, host_mac);
 		}
     }
 }
@@ -249,7 +252,7 @@ void* thread_listener(void * arg)
 int main(int argc, char *argv[])
 {
 
-	if(argc < 6)
+	if(argc < 7)
     {
         printf("usage: %s ip local_mac adapter gateway_ip subnet_mask lease_ip dns_ip \n", argv[0]);
         exit(1);
