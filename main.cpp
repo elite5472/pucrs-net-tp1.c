@@ -145,9 +145,9 @@ void* thread_listener(void * arg)
 		UdpHeader* i_udp = (UdpHeader*)(buffer + i);
 		i = i + sizeof(UdpHeader);
 		
-		if(ntohs(ethheader->Type) == 0x0800 && ipheader->Protocol == 0x11 && ntohs(udpheader->SourcePort) == 67)
+		if(ntohs(eth->Type) == 0x0800 && ip->Protocol == 0x11 && ntohs(udp->SourcePort) == 67)
 		{			
-			print_ip(ipheader->Source);
+			print_ip(ip->Source);
 			printf(": DHCP Discovery/Request\n");
 			
 			DhcpHeader* i_dhcp = (DhcpHeader*)(buffer+i); i += sizeof(DhcpHeader);
@@ -160,7 +160,7 @@ void* thread_listener(void * arg)
 			o_dhcp.Flags = ntohs(0x8000);
 			o_dhcp.Yiaddr = lease_ip;
 			o_dhcp.Siaddr = sender_ip;
-			memcpy(o_dhcp.Chaddr, ethheader->Source, 6);
+			memcpy(o_dhcp.Chaddr, eth->Source, 6);
 			o_dhcp.Magic = i_dhcp->Magic;
 			
 			uint8_t options[BUFFER_LEN];
