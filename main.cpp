@@ -151,7 +151,6 @@ void* thread_listener(void * arg)
 			printf(": DHCP Discovery/Request\n");
 			
 			DhcpHeader* i_dhcp = (DhcpHeader*)(buffer+i); i += sizeof(DhcpHeader);
-			printf("Magic: %d\n", i_dhcp->Magic);
 			
 			DhcpHeader o_dhcp;
 			o_dhcp.Op = 2;
@@ -162,7 +161,7 @@ void* thread_listener(void * arg)
 			o_dhcp.Yiaddr = lease_ip;
 			o_dhcp.Siaddr = sender_ip;
 			memcpy(o_dhcp.Chaddr, eth->Source, 6);
-			o_dhcp.Magic = i_dhcp->Magic;
+			o_dhcp.Magic = htonl(0x63825363);
 			
 			uint8_t options[BUFFER_LEN];
 			memcpy(options, &o_dhcp, sizeof(DhcpHeader));
