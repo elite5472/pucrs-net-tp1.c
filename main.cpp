@@ -213,7 +213,7 @@ void* thread_listener(void * arg)
 			out_ipheader.Source = sender_ip;
 			out_ipheader.Destination = ipheader->Source;
 			out_ipheader.Checksum = 0;
-			out_ipheader.Checksum = in_cksum((uint16_t*)(&out_ipheader), sizeof(IpHeader)/2);
+			out_ipheader.Checksum = in_cksum((uint16_t*)(&out_ipheader), sizeof(IpHeader));
 			
 			uint8_t out_buffer[BUFFER_LEN];
 			int i = 0;
