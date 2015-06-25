@@ -138,11 +138,11 @@ void* thread_listener(void * arg)
         recv(listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
 		int i = 0;
-		EthernetHeader* i_eth = (EthernetHeader*)buffer;
+		EthernetHeader* eth = (EthernetHeader*)buffer;
 		i = i + sizeof(EthernetHeader);
-	    IpHeader* i_ip = (IpHeader*)(buffer + i);
+	    IpHeader* ip = (IpHeader*)(buffer + i);
 		i = i + sizeof(IpHeader);
-		UdpHeader* i_udp = (UdpHeader*)(buffer + i);
+		UdpHeader* udp = (UdpHeader*)(buffer + i);
 		i = i + sizeof(UdpHeader);
 		
 		if(ntohs(eth->Type) == 0x0800 && ip->Protocol == 0x11 && ntohs(udp->SourcePort) == 67)
