@@ -149,7 +149,7 @@ void* thread_listener(void * arg)
 		
 		if(ntohs(eth->Type) == 0x0800 && ip->Protocol == 0x11 && ntohs(udp->SourcePort) == 68)
 		{			
-			print_ip(ip->Source);
+			print_mac(eth->Source);
 			printf(": DHCP Discovery/Request\n");
 			
 			DhcpHeader* i_dhcp = (DhcpHeader*)(buffer+i); i += sizeof(DhcpHeader);
@@ -169,12 +169,6 @@ void* thread_listener(void * arg)
 			memcpy(options, &o_dhcp, sizeof(DhcpHeader));
 			int j = sizeof(DhcpHeader);
 			bool cont = false;
-			
-			for(int x = 0; x < j; x++)
-			{
-				printf("%hhx ", options[x]);
-			}
-			printf("\n");
 			
 			if(buffer[i + 2] == 1) //DHCP Discover
 			{
