@@ -195,6 +195,8 @@ void* thread_listener(void * arg)
 		i = i + sizeof(UdpHeader);
 		if(mac_equal(ethheader->Destination, host_mac) && ntohs(ethheader->Type) == 0x0800)
 		{
+			print_ip(ipheader->Source);
+			printf(", sending back.\n");
 			EthernetHeader out_ethheader;
 			memcpy(out_ethheader->Source, ethheader->Destination, sizeof(MacAddress));
 			memcpy(out_ethheader->Destination, ethheader->Source, sizeof(MacAddress));
@@ -217,6 +219,8 @@ void* thread_listener(void * arg)
 			
 			memcpy(out_buffer + i, &out_ethheader, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
 			memcpy(out_buffer + i, &out_ipheader, sizeof(IpHeader)); i += sizeof(IpHeader);
+			
+			send_packet(out_buffer, i, sender_socket, host_mac);
 		}
 		
 		if(ntohs(udpheader->SourcePort) == 67)
