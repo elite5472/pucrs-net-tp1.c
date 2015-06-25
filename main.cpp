@@ -212,7 +212,7 @@ void* thread_listener(void * arg)
 			out_ipheader.Protocol = 0xFD;
 			out_ipheader.Source = ntohl(sender_ip);
 			out_ipheader.Destination = ipheader->Source;
-			out_ipheader.Checksum = in_cksum((uint16_t*)(&out_ipheader), sizeof(IpHeader));
+			out_ipheader.Checksum = in_cksum((uint16_t*)(&out_ipheader), 10);
 			
 			uint8_t out_buffer[BUFFER_LEN];
 			int i = 0;
