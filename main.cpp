@@ -240,10 +240,10 @@ int main(int argc, char *argv[])
     }
 
     //Config
-    sscanf(argv[1], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &host_mac[0], &host_mac[1], &host_mac[2], &host_mac[3], &host_mac[4], &host_mac[5]);
+    sscanf(argv[2], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &host_mac[0], &host_mac[1], &host_mac[2], &host_mac[3], &host_mac[4], &host_mac[5]);
 
 	struct in_addr addr_buffer;
-	inet_aton(argv[2], &addr_buffer);
+	inet_aton(argv[1], &addr_buffer);
     unsigned int sender_ip = addr_buffer.s_addr;
 	strcpy(ifr.ifr_name, argv[3]);
 
