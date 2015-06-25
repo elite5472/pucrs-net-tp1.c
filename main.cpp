@@ -184,7 +184,7 @@ int make_ip(MacAddress source_mac, uint32_t source_ip, MacAddress dest_mac, uint
 	ip.Id = 0x00;
 	ip.FlagsOffset = 0x00;
 	ip.Ttl = 64;
-	ip.Protocol = 0xFD;
+	ip.Protocol = protocol;
 	ip.Source = sender_ip;
 	ip.Destination = dest_ip;
 	ip.Checksum = 0;
