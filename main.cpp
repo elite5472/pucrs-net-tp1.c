@@ -258,6 +258,10 @@ int main(int argc, char *argv[])
         printf("Error: Socket did not initialize. \n");
         exit(1);
     }
+    
+    printf("Started. IP is "); print_ip(sender_ip);
+    printf("\nMac is "); print_mac(host_mac);
+    printf("\n");
 
 	pthread_t listener;
 	pthread_create(&listener, NULL, &thread_listener, NULL);
