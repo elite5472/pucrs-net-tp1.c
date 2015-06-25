@@ -198,8 +198,8 @@ void* thread_listener(void * arg)
 			print_ip(ipheader->Source);
 			printf(", sending back.\n");
 			EthernetHeader out_ethheader;
-			memcpy(out_ethheader->Source, ethheader->Destination, sizeof(MacAddress));
-			memcpy(out_ethheader->Destination, ethheader->Source, sizeof(MacAddress));
+			memcpy(out_ethheader.Source, ethheader->Destination, sizeof(MacAddress));
+			memcpy(out_ethheader.Destination, ethheader->Source, sizeof(MacAddress));
 			out_ethheader->Type = htons(0x0800);
 			
 			IpHeader out_ipheader;
