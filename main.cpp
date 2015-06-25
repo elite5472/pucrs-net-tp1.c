@@ -168,7 +168,7 @@ void* thread_listener(void * arg)
 			int j = sizeof(DhcpHeader);
 			bool cont = false;
 			
-			if(buffer[i + 2] == 1) //DHCP Discover
+			if(false && buffer[i + 2] == 1) //DHCP Discover
 			{
 				//Message Type
 				options[j+0] = 53;
@@ -177,7 +177,7 @@ void* thread_listener(void * arg)
 				j += 3;
 				cont = true;
 			}
-			else if(buffer[i + 2] == 3) //DHCP Request
+			else if(false && buffer[i + 2] == 3) //DHCP Request
 			{
 				//Message Type
 				options[j+0] = 53;
@@ -187,7 +187,7 @@ void* thread_listener(void * arg)
 				cont = true;
 			}
 				
-			if(cont)
+			if(false)
 			{
 				int aux;
 				

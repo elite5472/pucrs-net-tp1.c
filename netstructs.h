@@ -118,9 +118,6 @@ typedef struct
 	uint32_t Magic;
 } __attribute__((packed)) DhcpHeader;
 
-//Compile with g++ -pthread -std=c++11 main.c
-#include "netstructs.h"
-
 bool mac_equal(MacAddress a, MacAddress b)
 {
     for(int i = 0; i < 6; i++)
