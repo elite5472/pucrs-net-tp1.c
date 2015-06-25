@@ -51,15 +51,15 @@ typedef struct
 
 typedef struct
 {
-    uint8_t VersionIhl;
-    uint8_t DscpEcn;
+    uint8_t 	VersionIhl;
+    uint8_t 	DscpEcn;
     uint16_t    Length;
 
     uint16_t    Id;
     uint16_t    FlagsOffset;
 
-    uint8_t Ttl;
-    uint8_t Protocol;
+    uint8_t 	Ttl;
+    uint8_t 	Protocol;
     uint16_t    Checksum;
 
     uint32_t    Source;

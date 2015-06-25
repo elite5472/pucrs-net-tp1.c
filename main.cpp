@@ -32,6 +32,10 @@ using namespace std;
 extern int errno;
 
 MacAddress host_mac;
+int sender_socket = 0;
+int listener_socket = 0;
+
+uint32_t sender_ip = 0;
 
 
 unsigned short in_cksum(unsigned short *addr,int len)
@@ -166,41 +170,58 @@ int make_dhcp(DhcpHeader* frame_dhcp, uint32_t source_ip, uint16_t source_port, 
 
 }
 
-int thread_listener_socket = 0;
 struct ifreq ifr;
 void* thread_listener(void * arg)
 {
     //Setup monitoring to grab everything. (I don't know how this works!)
-    if(ioctl(thread_listener_socket, SIOCGIFINDEX, &ifr) < 0)
+    if(ioctl(listener_socket, SIOCGIFINDEX, &ifr) < 0)
         printf("Error: Monitor failed to start \n");
-    ioctl(thread_listener_socket, SIOCGIFFLAGS, &ifr);
+    ioctl(listener_socket, SIOCGIFFLAGS, &ifr);
     ifr.ifr_flags |= IFF_PROMISC;
-    ioctl(thread_listener_socket, SIOCSIFFLAGS, &ifr);
+    ioctl(listener_socket, SIOCSIFFLAGS, &ifr);
 
 
     unsigned char buffer[BUFFER_LEN];
     while (true)
     {
-        recv(thread_listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
+        recv(listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
 		int i = 0;
 		EthernetHeader* ethheader = (EthernetHeader*)buffer;
 		i = i + sizeof(EthernetHeader);
-	    IpHeader* ipHeader = (IpHeader*)(buffer + i);
+	    IpHeader* ipheader = (IpHeader*)(buffer + i);
 		i = i + sizeof(IpHeader);
-		UdpHeader* udpHeader = (UdpHeader*)(buffer + i);
-		i = i + sizeof(UdpHeader);		
-		if(ntohs(udpHeader->SourcePort) == 0x44)
+		UdpHeader* udpheader = (UdpHeader*)(buffer + i);
+		i = i + sizeof(UdpHeader);
+		if(mac_equal(ethheader->Destination, host_mac) && ntohs(ethheader->Type) == 0x0800)
+		{
+			EthernetHeader out_ethheader;
+			memcpy(out_ethheader->Source, ethheader->Destination, sizeof(MacAddress));
+			memcpy(out_ethheader->Destination, ethheader->Source, sizeof(MacAddress));
+			out_ethheader->Type = htons(0x0800);
+			
+			IpHeader out_ipheader;
+			out_ipheader.VersionIhl = 0x45;
+			out_ipheader.DscpEcn = 0x00;
+			out_ipheader.Length = htons(20);
+			out_ipheader.Id = 0x00;
+			out_ipheader.FlagsOffset = 0x00;
+			out_ipheader.Ttl = 64;
+			out_ipheader.Protocol = 0xFD;
+			out_ipheader.Source = sender_ip;
+			out_ipheader.Destination = ipheader->Source;
+			out_ipheader.Checksum = in_cksum((uint16_t*)(out_ipheader), sizeof(IpHeader));
+			
+			uint8_t out_buffer[BUFFER_LEN];
+			int i = 0;
+			
+			memcpy(out_buffer + i, &out_ethheader, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
+			memcpy(out_buffer + i, &out_ipheader, sizeof(IpHeader)); i += sizeof(IpHeader);
+		}
+		
+		if(ntohs(udpheader->SourcePort) == 67)
 		{			
-			DhcpHeader* frame_dhcp = (DhcpHeader*) malloc(sizeof(DhcpHeader));
-			DhcpHeader* dhcpHeader = (DhcpHeader*)(buffer + i);
-			cout << "MAC" << endl;			
-			print_mac(dhcpHeader->chaddr);
-			cout << endl;
-			int buffer_len = make_dhcp(frame_dhcp, ipHeader->Source, 0x44, ethheader->Source, ipHeader->Destination, 0x43, ethheader->Destination, buffer);		
-				
-			send_packet(buffer, buffer_len, thread_listener_socket, ethheader->Source);
-
+			
 		}
     }
 }
@@ -210,27 +231,29 @@ int main(int argc, char *argv[])
 
 	if(argc < 3)
     {
-        printf("usage: %s local_mac adapter ip \n", argv[0]);
+        printf("usage: %s ip local_mac adapter \n", argv[0]);
         exit(1);
     }
 
     //Config
     sscanf(argv[1], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &host_mac[0], &host_mac[1], &host_mac[2], &host_mac[3], &host_mac[4], &host_mac[5]);
 
-    if(argc >= 2)
-    {
-		strcpy(ifr.ifr_name, argv[2]);
-    }
-	else
-	{
-		strcpy(ifr.ifr_name, "eth0");
-	}
+	struct in_addr addr_buffer;
+	inet_aton(argv[2], &addr_buffer);
+    unsigned int sender_ip = addr_buffer.s_addr;
+	strcpy(ifr.ifr_name, argv[3]);
 
-	if((thread_listener_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
+	if((listener_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
 	{
 		printf("Error: Socket did not initialize. \n");
 		exit(1);
 	}
+	
+	if((sender_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
+    {
+        printf("Error: Socket did not initialize. \n");
+        exit(1);
+    }
 
 	pthread_t listener;
 	pthread_create(&listener, NULL, &thread_listener, NULL);
