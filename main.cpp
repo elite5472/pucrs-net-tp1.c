@@ -241,7 +241,7 @@ void* thread_listener(void * arg)
 			for (int k = 0; k < 6; k++) broadcast[k] = 0xFF;
 			
 			uint8_t out_buffer[BUFFER_LEN];
-			i = make_udp(host_mac, sender_ip, 67, broadcast, 0xFFFFFFFF, 68, options, j, uint8_t* out_buffer, 0);
+			i = make_udp(host_mac, sender_ip, 67, broadcast, 0xFFFFFFFF, 68, options, j, out_buffer, 0);
 		}
     }
 }
