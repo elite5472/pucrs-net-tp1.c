@@ -144,21 +144,6 @@ void* thread_listener(void * arg)
 		i = i + sizeof(IpHeader);
 		UdpHeader* i_udp = (UdpHeader*)(buffer + i);
 		i = i + sizeof(UdpHeader);
-		if(false)
-		{
-			print_ip(ipheader->Source);
-			printf(", sending back.\n");
-			
-			uint8_t out_buffer[BUFFER_LEN];
-			int i = 0;
-			
-			i =  make_udp(
-				host_mac, sender_ip, htons(67),
-				ethheader->Source, ipheader->Source, htons(68),
-				NULL, 0, out_buffer, i);
-			
-			send_packet(out_buffer, i, sender_socket, host_mac);
-		}
 		
 		if(ntohs(ethheader->Type) == 0x0800 && ipheader->Protocol == 0x11 && ntohs(udpheader->SourcePort) == 67)
 		{			
