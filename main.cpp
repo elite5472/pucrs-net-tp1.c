@@ -151,6 +151,7 @@ void* thread_listener(void * arg)
 			printf(": DHCP Discovery/Request\n");
 			
 			DhcpHeader* i_dhcp = (DhcpHeader*)(buffer+i); i += sizeof(DhcpHeader);
+			printf("Magic: %d\n", i_dhcp->Magic);
 			
 			DhcpHeader o_dhcp;
 			o_dhcp.Op = 2;
