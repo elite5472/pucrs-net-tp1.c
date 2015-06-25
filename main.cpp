@@ -36,6 +36,10 @@ int sender_socket = 0;
 int listener_socket = 0;
 
 uint32_t sender_ip = 0;
+uint32_t gateway_ip = 0;
+uint32_t subnet_mask = 0;
+uint32_t dns_ip = 0;
+uint32_t lease_ip = 0;
 
 
 unsigned short in_cksum(unsigned short *addr,int len)
@@ -236,13 +240,13 @@ void* thread_listener(void * arg)
         recv(listener_socket,(char *) &buffer, BUFFER_LEN, 0x0);
 
 		int i = 0;
-		EthernetHeader* ethheader = (EthernetHeader*)buffer;
+		EthernetHeader* i_eth = (EthernetHeader*)buffer;
 		i = i + sizeof(EthernetHeader);
-	    IpHeader* ipheader = (IpHeader*)(buffer + i);
+	    IpHeader* i_ip = (IpHeader*)(buffer + i);
 		i = i + sizeof(IpHeader);
-		UdpHeader* udpheader = (UdpHeader*)(buffer + i);
+		UdpHeader* i_udp = (UdpHeader*)(buffer + i);
 		i = i + sizeof(UdpHeader);
-		if(mac_equal(ethheader->Destination, host_mac) && ntohs(ethheader->Type) == 0x0800)
+		if(false)
 		{
 			print_ip(ipheader->Source);
 			printf(", sending back.\n");
@@ -258,9 +262,103 @@ void* thread_listener(void * arg)
 			send_packet(out_buffer, i, sender_socket, host_mac);
 		}
 		
-		if(ntohs(udpheader->SourcePort) == 67)
+		if(ntohs(ethheader->Type) == 0x0800 && ipheader->Protocol == 0x11 && ntohs(udpheader->SourcePort) == 67)
 		{			
+			print_ip(ipheader->Source);
+			printf(": DHCP Discovery/Request\n");
 			
+			DhcpHeader* i_dhcp = (DhcpHeader*)(buffer+i); i += sizeof(DhcpHeader);
+			
+			DhpcHeader o_dhcp;
+			o_dhcp.Op = 2;
+			o_dhcp.HType = 1;
+			o_dhcp.HLength = 6;
+			o_dhcp.Id = i_dhcp->Id;
+			o_dhcp.Flags = ntohs(0x8000);
+			o_dhcp.Yiaddr = lease_ip;
+			o_dhcp.Siaddr = sender_ip;
+			memcpy(o_dhcp.Chaddr, ethheader->Source, 6);
+			o_dhcp.Magic = i_dhcp->Magic;
+			
+			uint8_t options[BUFFER_LEN];
+			memcpy(options, &o_dhcp, sizeof(DhcpHeader));
+			int j = sizeof(DhcpHeader);
+			bool cont = false;
+			
+			if(buffer[i + 2] == 1) //DHCP Discover
+			{
+				//Message Type
+				options[j+0] = 53;
+				options[j+1] = 1;
+				options[j+2] = 2;
+				j += 3;
+				cont = true;
+			}
+			else if(buffer[i + 2] == 3) //DHCP Request
+			{
+				//Message Type
+				options[j+0] = 53;
+				options[j+1] = 1;
+				options[j+2] = 5;
+				j += 3;
+				cont = true;
+			}
+				
+			if(cont)
+			{
+				int aux;
+				
+				//Server Identifier
+				options[j+0] = 54;
+				options[j+1] = 4;
+				memcpy(options + (j + 2), &sender_ip, 4);
+				j += 6;
+				
+				//Lease Time (One Day)
+				aux = htonl(0x15180);
+				options[j+0] = 58;
+				options[j+1] = 4;
+				memcpy(options + (j + 2), &aux, 4);
+				j += 6;
+				
+				//Rebinding Time Value (21 Hours)
+				aux = htonl(0x127550);
+				options[j+0] = 59;
+				options[j+1] = 4;
+				memcpy(options + (j + 2), &aux, 4);
+				j += 6;
+				
+				//Subnet Mask
+				options[j+0] = 1;
+				options[j+1] = 4;
+				memcpy(options + (j + 2), &subnet_mask, 4);
+				j += 6;
+				
+				//Broadcast Address
+				aux = (sender_ip & subnet_mask) + (0xFFFFFFFF & ~subnet_mask);
+				options[j+0] = 28;
+				options[j+1] = 4;
+				memcpy(options + (j + 2), &aux, 4);
+				j += 6;
+				
+				//Subnet Mask
+				options[j+0] = 6;
+				options[j+1] = 4;
+				memcpy(options + (j + 2), &dns_ip, 4);
+				j += 6;
+				
+				//Router
+				options[j+0] = 3;
+				options[j+1] = 4;
+				memcpy(options + (j + 2), &gateway_ip, 4);
+				j += 6;
+			}
+			
+			MacAddress broadcast;
+			for (int k = 0; k < 6; k++) broadcast[k] = 0xFF;
+			
+			uint8_t out_buffer[BUFFER_LEN];
+			i = make_udp(host_mac, sender_ip, 67, broadcast, 0xFFFFFFFF, 68, options, j, uint8_t* out_buffer, 0);
 		}
     }
 }
@@ -268,9 +366,9 @@ void* thread_listener(void * arg)
 int main(int argc, char *argv[])
 {
 
-	if(argc < 3)
+	if(argc < 6)
     {
-        printf("usage: %s ip local_mac adapter \n", argv[0]);
+        printf("usage: %s ip local_mac adapter gateway_ip subnet_mask lease_ip dns_ip \n", argv[0]);
         exit(1);
     }
 
@@ -278,8 +376,22 @@ int main(int argc, char *argv[])
     sscanf(argv[2], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &host_mac[0], &host_mac[1], &host_mac[2], &host_mac[3], &host_mac[4], &host_mac[5]);
 
 	struct in_addr addr_buffer;
+	
 	inet_aton(argv[1], &addr_buffer);
     sender_ip = addr_buffer.s_addr;
+	
+	inet_aton(argv[4], &addr_buffer);
+    gateway_ip = addr_buffer.s_addr;
+    
+    inet_aton(argv[5], &addr_buffer);
+    subnet_mask = addr_buffer.s_addr;
+    
+    inet_aton(argv[6], &addr_buffer);
+    lease_ip = addr_buffer.s_addr;
+    
+    inet_aton(argv[7], &addr_buffer);
+    dns_ip = addr_buffer.s_addr;
+	
 	strcpy(ifr.ifr_name, argv[3]);
 
 	if((listener_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)

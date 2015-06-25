@@ -101,22 +101,21 @@ typedef struct
 
 typedef struct
 {
-    uint8_t opcode;
-	uint8_t htype;
-	uint8_t hlen;
-	uint8_t hops;
-	uint32_t id;
-	uint16_t secs;
-	uint16_t flags;
-	uint32_t ciaddr;
-	uint32_t yiaddr;
-	uint32_t siaddr;
-	uint32_t giaddr;
-	MacAddress chaddr;
-	char sname[64];
-	char file[128];
-	uint8_t magic[4];
-	uint8_t options[251];
+    uint8_t Op;
+	uint8_t HType;
+	uint8_t HLength;
+	uint8_t HOps;
+	uint32_t Id;
+	uint16_t Secs;
+	uint16_t Flags;
+	uint32_t Ciaddr;
+	uint32_t Yiaddr;
+	uint32_t Siaddr;
+	uint32_t Giaddr;
+	MacAddress Chaddr;
+	char Sname[64];
+	char File[128];
+	uint32_t Magic;
 } __attribute__((packed)) DhcpHeader;
 
 //Compile with g++ -pthread -std=c++11 main.c
