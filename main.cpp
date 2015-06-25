@@ -205,6 +205,16 @@ void* thread_listener(void * arg)
 				memcpy(options + (j + 2), &sender_ip, 4);
 				j += 6;
 				
+				if(buffer[i + 2] == 3)
+				{
+					//Allocated Time (One Day)
+					aux = htonl(0x15180);
+					options[j+0] = 51;
+					options[j+1] = 4;
+					memcpy(options + (j + 2), &aux, 4);
+					j += 6;
+				}
+				
 				//Lease Time (One Day)
 				aux = htonl(0x15180);
 				options[j+0] = 58;
