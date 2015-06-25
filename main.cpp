@@ -193,7 +193,7 @@ int make_ip(MacAddress source_mac, uint32_t source_ip, MacAddress dest_mac, uint
 	int i = buffer_offset;
 	memcpy(buffer + i, &eth, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
 	memcpy(buffer + i, &ip, sizeof(IpHeader)); i += sizeof(IpHeader);
-	memcpy(budder + i, &data, data_len); i += data_len;
+	memcpy(buffer + i, &data, data_len); i += data_len;
 	
 	return i;
 }
