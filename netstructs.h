@@ -113,8 +113,9 @@ typedef struct
 	uint32_t Siaddr;
 	uint32_t Giaddr;
 	MacAddress Chaddr;
-	char Sname[64];
-	char File[128];
+	uint8_t Padding;
+	uint8_t Sname[64];
+	uint8_t File[128];
 	uint32_t Magic;
 } __attribute__((packed)) DhcpHeader;
 
