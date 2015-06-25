@@ -188,7 +188,7 @@ int make_ip(MacAddress source_mac, uint32_t source_ip, MacAddress dest_mac, uint
 	ip.Source = sender_ip;
 	ip.Destination = dest_ip;
 	ip.Checksum = 0;
-	ip.Checksum = in_cksum((uint16_t*)(&out_ipheader), sizeof(IpHeader));
+	ip.Checksum = in_cksum((uint16_t*)(&ip), sizeof(IpHeader));
 	
 	int i = buffer_offset;
 	memcpy(buffer + i, &eth, sizeof(EthernetHeader)); i += sizeof(EthernetHeader);
